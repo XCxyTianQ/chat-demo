@@ -19,6 +19,11 @@ const cssLoader = {
 type ConfigOptions = {
   /** 公开 API 的地址，注入为 __API_ORIGIN__ */
   apiOrigin?: string
+  /**
+   * 预置的 API Key，注入为 __DEFAULT_API_KEY__。
+   * 仅供本机/内网 demo 使用：密钥会被写进产物，分发或公开部署即等于泄露。
+   */
+  apiKey?: string
   /** 开发服务器配置，支持本地接口代理 */
   devServer?: Configuration['devServer']
 }
@@ -26,6 +31,7 @@ type ConfigOptions = {
 /** 创建构建配置，支持自定义 API 地址和开发服务器选项 */
 export const createConfig = ({
   apiOrigin = 'https://api.deepseek.com',
+  apiKey = process.env.CHAT_DEMO_API_KEY ?? '',
   devServer,
 }: ConfigOptions = {}): Configuration => ({
   mode: dev ? 'development' : 'production',
@@ -80,7 +86,10 @@ export const createConfig = ({
       scriptLoading: 'defer',
       meta: { 'application-version': version },
     }),
-    new rspack.DefinePlugin({ __API_ORIGIN__: JSON.stringify(apiOrigin) }),
+    new rspack.DefinePlugin({
+      __API_ORIGIN__: JSON.stringify(apiOrigin),
+      __DEFAULT_API_KEY__: JSON.stringify(apiKey),
+    }),
     new rspack.CopyRspackPlugin({
       patterns: [{ from: path.resolve(root, 'LICENSE'), to: 'LICENSE', toType: 'file' }],
     }),

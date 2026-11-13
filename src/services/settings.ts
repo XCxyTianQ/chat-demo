@@ -87,8 +87,11 @@ const initialThemePreference = (): ThemePreference => {
 /** 未保存过时使用服务端默认音色 stella（海星） */
 const initialTtsVoice = (): TtsVoice => (read(KEYS.ttsVoice) === 'tide' ? 'tide' : 'stella')
 
+/** 未保存过时回落到构建期预置的 Key（自定义构建会注入，官方产物为空串） */
+const initialApiKey = (): string | null => read(KEYS.apiKey) ?? (__DEFAULT_API_KEY__ || null)
+
 export const useSettings = create<Settings>(() => ({
-  apiKey: read(KEYS.apiKey),
+  apiKey: initialApiKey(),
   locale: initialLocale(),
   location: initialLocation(),
   themePreference: initialThemePreference(),
