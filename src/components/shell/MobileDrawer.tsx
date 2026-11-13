@@ -2,7 +2,7 @@ import clsx from 'clsx'
 import { useEffect, useState } from 'react'
 import { IconSettingsOutline16 } from '../base/icons.js'
 import { IconButton } from '../base/IconButton.js'
-import { IconMasksOutline20 } from '../base/rpIcons.js'
+import { Constellation } from '../stage/Astra.js'
 import { personaAvatar } from '../../services/characters/avatar.js'
 import { useCharacters } from '../../services/characters/store.js'
 import { openSettings } from '../settings/settingsDialogState.js'
@@ -57,9 +57,12 @@ export const MobileDrawer = () => {
       >
         <div className={styles.head}>
           <span className={styles.logo} aria-hidden="true">
-            <IconMasksOutline20 />
+            <Constellation name="Astra" accent={44} size={24} />
           </span>
-          <span className={styles.brand}>{shellStrings.appName}</span>
+          <span className={styles.brand}>
+            <span className={styles.brandName}>{shellStrings.appName}</span>
+            <span className={styles.brandLabel}>{shellStrings.brandName}</span>
+          </span>
           <button
             type="button"
             className={styles.persona}

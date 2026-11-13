@@ -1,0 +1,58 @@
+.button {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 24px;
+  padding: 0 8px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--rp-text-muted);
+  font-family: var(--astra-mono, ui-monospace, monospace);
+  font-size: 10px;
+  line-height: 1;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    color var(--rp-dur) var(--rp-ease),
+    border-color var(--rp-dur) var(--rp-ease),
+    background-color var(--rp-dur) var(--rp-ease);
+
+  &:hover:not(:disabled) {
+    border-color: var(--rp-line);
+    background: var(--rp-paper-tint);
+    color: var(--rp-text);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--rp-ember-soft);
+    outline-offset: 1px;
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}
+
+.icon {
+  display: flex;
+  flex-shrink: 0;
+
+  svg {
+    width: 13px;
+    height: 13px;
+  }
+}
+
+.label {
+  display: inline-block;
+  padding-top: 1px;
+}
+
+.active {
+  border-color: var(--rp-ember-soft);
+  background: var(--rp-ember-soft);
+  color: var(--rp-ember);
+}

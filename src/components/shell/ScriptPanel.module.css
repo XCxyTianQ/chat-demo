@@ -1,0 +1,242 @@
+.panel {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  gap: 18px;
+  box-sizing: border-box;
+  width: 300px;
+  padding: 18px 20px 16px;
+  border-left: 1px solid var(--rp-line);
+  /* 用令牌而不是写死的深色，浅色主题下自动变成日光观测台的白玻璃 */
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--rp-surface) 92%, transparent),
+    color-mix(in srgb, var(--rp-surface) 100%, transparent)
+  );
+  backdrop-filter: blur(18px) saturate(1.05);
+  -webkit-backdrop-filter: blur(18px) saturate(1.05);
+  overflow-y: auto;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.eyebrow {
+  font-family: var(--ds-font-family-code);
+  font-size: 9px;
+  letter-spacing: 0.26em;
+  color: var(--rp-text-muted);
+}
+
+.identity {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-align: center;
+}
+
+.orbit {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 132px;
+  height: 132px;
+  margin-bottom: 4px;
+}
+
+.portrait {
+  position: absolute;
+  width: 54px;
+  height: 54px;
+  border-radius: 14px;
+  border: 1px solid var(--rp-line-strong);
+  object-fit: cover;
+  box-shadow: 0 0 24px hsl(var(--char-hue) 70% 60% / 0.28);
+}
+
+.name {
+  font-family: var(--rp-font-display);
+  font-size: 21px;
+  letter-spacing: 0.06em;
+  color: var(--rp-text);
+}
+
+.designation {
+  display: flex;
+  gap: 5px;
+  font-family: var(--ds-font-family-code);
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  color: var(--rp-text-muted);
+}
+
+.sep {
+  opacity: 0.5;
+}
+
+.tagline {
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--rp-text-secondary);
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 5px;
+  margin-top: 4px;
+}
+
+.tag {
+  padding: 2px 8px;
+  border: 1px solid var(--rp-line-strong);
+  border-radius: 999px;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: var(--rp-text-muted);
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sectionTitle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  color: var(--rp-text-muted);
+}
+
+.rule {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--rp-line-strong), transparent);
+}
+
+.scenario {
+  margin: 0;
+  font-family: var(--rp-font-quote);
+  font-size: 12.5px;
+  line-height: 1.8;
+  color: var(--rp-text-secondary);
+}
+
+.beats {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.beat {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 3px 0;
+  font-family: var(--ds-font-family-code);
+  font-size: 10px;
+  color: var(--rp-text-secondary);
+}
+
+.beatDot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--char-accent-strong);
+  box-shadow: 0 0 8px hsl(var(--char-hue) 80% 70% / 0.8);
+}
+
+.beatIndex {
+  color: var(--rp-text);
+}
+
+.beatTime {
+  margin-left: auto;
+  color: var(--rp-text-muted);
+}
+
+.empty {
+  font-size: 11px;
+  color: var(--rp-text-muted);
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid var(--rp-line);
+}
+
+.action {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 9px 0;
+  border: 1px solid var(--rp-line-strong);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--rp-text-secondary);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition: border-color var(--rp-dur) var(--rp-ease), color var(--rp-dur) var(--rp-ease);
+}
+
+.action:hover:not(:disabled) {
+  border-color: var(--char-accent);
+  color: var(--rp-text);
+}
+
+.action:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.collapsed {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  border: none;
+  border-left: 1px solid var(--rp-line);
+  background: var(--rp-surface);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  color: var(--rp-text-muted);
+  cursor: pointer;
+}
+
+.collapsedText {
+  writing-mode: vertical-rl;
+  font-size: 11px;
+  letter-spacing: 0.3em;
+}
+
+.collapsed:hover {
+  color: var(--rp-ember);
+}
+
+@media (max-width: 1199px) {
+  .panel,
+  .collapsed {
+    display: none;
+  }
+}

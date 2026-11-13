@@ -1,11 +1,10 @@
 import clsx from 'clsx'
 import { memo, useEffect, useState } from 'react'
 import { IconEditOutline16, IconEllipsisOutline16, IconTrashOutline16 } from '../base/icons.js'
-import { IconQuillOutline20 } from '../base/rpIcons.js'
 import { IconButton } from '../base/IconButton.js'
 import { Menu } from '../base/Menu.js'
 import { showToast } from '../base/toastState.js'
-import { characterAvatar } from '../../services/characters/avatar.js'
+import { Constellation, starDesignation } from '../stage/Astra.js'
 import { useCharacters } from '../../services/characters/store.js'
 import {
   removeSession,
@@ -17,15 +16,6 @@ import type { SessionSummary } from '../../services/chat/types.js'
 import { closeSider } from './uiState.js'
 import { relativeTime, shellStrings } from './strings.js'
 import styles from './RecentChats.module.css'
-
-/**
- * 会话列表只带元数据（SessionSummary 没有 characterId），角色头像只能从已加载的会话里取。
- * 这里记住打开过的会话属于谁，避免缓存淘汰（只保留最近 5 个）后头像闪回占位记号。
- */
-const sessionCharacters = new Map<string, string>()
-
-/** startCharacterChat 默认用角色名做标题，重名时追加「 · 2」这样的序号 */
-const baseTitle = (title: string) => title.replace(/ · \d+$/, '')
 
 /** 每分钟刷新一次「n 分钟前」，回到前台时立刻校准 */
 const useNow = (interval: number) => {
@@ -44,6 +34,8 @@ const useNow = (interval: number) => {
   return now
 }
 
+const catalogTail = (catalog: string) => catalog.replace(/\D/g, '')
+
 const SessionRow = memo(function SessionRow({
   session,
   active,
@@ -53,26 +45,15 @@ const SessionRow = memo(function SessionRow({
   active: boolean
   now: number
 }) {
-  const cachedCharacterId =
-    useChatStore((state) => state.sessionCache[session.id]?.characterId ?? null) ??
-    session.characterId ??
-    null
-  useEffect(() => {
-    if (cachedCharacterId) {
-      sessionCharacters.set(session.id, cachedCharacterId)
-    }
-  }, [session.id, cachedCharacterId])
-  // 还没打开过的会话按标题猜（默认标题就是角色名），猜不到就用中性「羽毛」记号
-  const guessedName = cachedCharacterId ? '' : baseTitle(session.title)
+  // 记录列表已经带 characterId；没有绑定角色的普通对话用一枚中性星点
   const character = useCharacters((state) =>
-    cachedCharacterId
-      ? state.characters.find((item) => item.id === cachedCharacterId)
-      : state.characters.find(
-          (item) => item.id === sessionCharacters.get(session.id) || item.name === guessedName
-        )
+    session.characterId
+      ? state.characters.find((item) => item.id === session.characterId)
+      : undefined
   )
   const [editing, setEditing] = useState(false)
   const displayTitle = session.title || shellStrings.untitledChat
+  const catalog = character ? starDesignation(character.name).catalog : null
 
   if (editing) {
     const finish = (title: string) => {
@@ -110,20 +91,18 @@ const SessionRow = memo(function SessionRow({
           closeSider()
         }}
       >
-        {character ? (
-          <img
-            className={styles.avatar}
-            src={characterAvatar(character)}
-            alt=""
-            draggable={false}
-          />
-        ) : (
-          <span className={styles.avatarFallback} aria-hidden="true">
-            <IconQuillOutline20 />
-          </span>
-        )}
+        <span className={styles.dot} aria-hidden="true">
+          {character ? (
+            <Constellation name={character.name} accent={character.accent} size={24} />
+          ) : (
+            <span className={styles.dotEmpty}>✦</span>
+          )}
+        </span>
         <span className={styles.title}>{displayTitle}</span>
-        <span className={styles.time}>{relativeTime(session.updatedAt, now)}</span>
+        <span className={styles.meta}>
+          <span className={styles.time}>{relativeTime(session.updatedAt, now)}</span>
+          {catalog ? <span className={styles.catalog}>{catalogTail(catalog)}</span> : null}
+        </span>
       </button>
       <div className={styles.more}>
         <Menu
@@ -162,18 +141,22 @@ const SessionRow = memo(function SessionRow({
   )
 })
 
-/** 侧栏下半：按最近更新排列的会话 */
+/** 侧栏下半 · 观测记录：按最近更新排列的会话 */
 export const RecentChats = () => {
   const sessions = useChatStore((state) => state.sessions)
   const activeId = useChatStore((state) => state.activeId)
   const now = useNow(60_000)
 
   return (
-    <section className={styles.section} aria-labelledby="rp-recent-title">
+    <section className={styles.section} aria-labelledby="astra-recent-title">
       <div className={styles.header}>
-        <h2 id="rp-recent-title" className={styles.sectionTitle}>
-          {shellStrings.recentTitle}
-        </h2>
+        <div className={styles.heading}>
+          <h2 id="astra-recent-title" className={styles.sectionTitle}>
+            {shellStrings.recentTitle}
+          </h2>
+          <span className={styles.label}>{shellStrings.recentLabel}</span>
+        </div>
+        <span className={styles.spacer} />
         {sessions.length > 0 ? <span className={styles.count}>{sessions.length}</span> : null}
       </div>
       <div className={styles.list}>

@@ -6,16 +6,12 @@ import {
   useState,
   type ChangeEvent,
   type CSSProperties,
+  type ReactNode,
 } from 'react'
 import { createPortal } from 'react-dom'
 import { Button } from '../../base/Button.js'
 import { IconButton } from '../../base/IconButton.js'
-import {
-  IconCloseOutline16,
-  IconDownloadOutline16,
-  IconTrashOutline16,
-  IconUploadOutline14,
-} from '../../base/icons.js'
+import { IconCloseOutline16 } from '../../base/icons.js'
 import { showToast } from '../../base/toastState.js'
 import { useSettingsDialog } from '../../settings/settingsDialogState.js'
 import {
@@ -32,6 +28,7 @@ import {
   updateCharacter,
 } from '../../../services/characters/store.js'
 import type { CharacterCard, CharacterDraft } from '../../../services/characters/types.js'
+import { Constellation, starDesignation } from '../../stage/Astra.js'
 import {
   draftToCard,
   exportCharacter,
@@ -88,13 +85,15 @@ const parseTags = (text: string): string[] => [
 ]
 
 const errorText = (error: unknown): string =>
-  `${STRINGS.importFailed}：${
-    error instanceof Error && error.message ? error.message : STRINGS.importUnknownError
-  }`
+  STRINGS.importFailed +
+  '：' +
+  (error instanceof Error && error.message ? error.message : STRINGS.importUnknownError)
 
 /**
- * 角色编辑器：右侧抽屉，桌面 520px 宽，移动端全屏。
- * 从 useRpUi.editorId 取要编辑的角色：null 关闭、空串新建、其余为角色 id。
+ * 星图档案：角色编辑器。
+ * 右侧玻璃抽屉（桌面 520px、移动端全屏），顶部是星表信息与星座，
+ * 设定按 IDENTITY / SETTING / VOICE 三节归档。
+ * editorId 来自 useRpUi：null 关闭、空串新建、其余为角色 id。
  */
 export const CharacterEditor = () => {
   const request = useRpUi((state) => state.editorId)
@@ -192,7 +191,7 @@ export const CharacterEditor = () => {
   const tryCloseRef = useRef(tryClose)
   tryCloseRef.current = tryClose
 
-  // Esc 关闭；叠在上面的弹窗（设置、人格）自己处理 Esc
+  // Esc 关闭；叠在上面的弹窗（设置、观测者）自己处理 Esc
   useEffect(() => {
     if (!open) {
       return
@@ -331,6 +330,7 @@ export const CharacterEditor = () => {
 
   const draft = instance.draft
   const editing = instance.mode === 'edit'
+  const designation = starDesignation(draft.name)
 
   return createPortal(
     <div
@@ -342,7 +342,7 @@ export const CharacterEditor = () => {
       }}
     >
       <aside
-        className={clsx(styles.drawer, visible && styles.drawerVisible)}
+        className={clsx(styles.drawer, 'rp-grain', visible && styles.drawerVisible)}
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
@@ -360,6 +360,17 @@ export const CharacterEditor = () => {
         </header>
 
         <div className={styles.body}>
+          <div className={styles.archiveBar}>
+            <span className={styles.archiveTitle}>{STRINGS.archiveTitle}</span>
+            <span className={styles.archiveMeta}>
+              <span>{designation.catalog}</span>
+              <span className={styles.archiveDot} aria-hidden="true">
+                ·
+              </span>
+              <span>{designation.coordinate}</span>
+            </span>
+          </div>
+
           <section className={styles.preview}>
             <div className={styles.avatarColumn}>
               <button
@@ -401,14 +412,14 @@ export const CharacterEditor = () => {
                 onChange={(event) => patch({ name: event.target.value })}
               />
               <input
-                className={styles.lineInput}
+                className={styles.glassInput}
                 value={draft.tagline}
                 placeholder={STRINGS.taglinePlaceholder}
                 aria-label={STRINGS.taglineLabel}
                 onChange={(event) => patch({ tagline: event.target.value })}
               />
               <input
-                className={styles.lineInput}
+                className={styles.glassInput}
                 value={tagsText}
                 placeholder={STRINGS.tagsPlaceholder}
                 aria-label={STRINGS.tagsLabel}
@@ -417,12 +428,19 @@ export const CharacterEditor = () => {
                   patch({ tags: parseTags(event.target.value) })
                 }}
               />
-              <HuePicker accent={draft.accent} onChange={(accent) => patch({ accent })} />
             </div>
+
+            <Constellation
+              className={styles.constellation}
+              name={draft.name}
+              accent={draft.accent}
+              size={120}
+            />
+
+            <HuePicker accent={draft.accent} onChange={(accent) => patch({ accent })} />
           </section>
 
-          <section className={styles.group}>
-            <h3 className={styles.groupTitle}>{STRINGS.settingsTitle}</h3>
+          <Section code={STRINGS.identityCode} name={STRINGS.identityName}>
             <Field
               label={STRINGS.descriptionLabel}
               value={draft.description}
@@ -437,6 +455,9 @@ export const CharacterEditor = () => {
               placeholder={STRINGS.personalityPlaceholder}
               onChange={(personality) => patch({ personality })}
             />
+          </Section>
+
+          <Section code={STRINGS.settingCode} name={STRINGS.settingName}>
             <Field
               label={STRINGS.scenarioLabel}
               value={draft.scenario}
@@ -444,6 +465,17 @@ export const CharacterEditor = () => {
               placeholder={STRINGS.scenarioPlaceholder}
               onChange={(scenario) => patch({ scenario })}
             />
+            <Field
+              label={STRINGS.systemPromptLabel}
+              value={draft.systemPrompt ?? ''}
+              rows={3}
+              placeholder={STRINGS.systemPromptPlaceholder}
+              optional
+              onChange={(systemPrompt) => patch({ systemPrompt })}
+            />
+          </Section>
+
+          <Section code={STRINGS.voiceCode} name={STRINGS.voiceName}>
             <Field
               label={STRINGS.firstMessageLabel}
               value={draft.firstMessage}
@@ -460,15 +492,7 @@ export const CharacterEditor = () => {
               hint={STRINGS.exampleDialoguesHint}
               onChange={(exampleDialogues) => patch({ exampleDialogues })}
             />
-            <Field
-              label={STRINGS.systemPromptLabel}
-              value={draft.systemPrompt ?? ''}
-              rows={3}
-              placeholder={STRINGS.systemPromptPlaceholder}
-              optional
-              onChange={(systemPrompt) => patch({ systemPrompt })}
-            />
-          </section>
+          </Section>
         </div>
 
         {pasteOpen ? (
@@ -523,45 +547,53 @@ export const CharacterEditor = () => {
             </div>
           ) : (
             <>
-              <div className={styles.footerLeft}>
-                <Button
-                  variant="outlined"
-                  size="s"
-                  className={styles.withIcon}
+              <div className={styles.footerActions}>
+                <button
+                  type="button"
+                  className={styles.textAction}
+                  aria-label={STRINGS.importCardLabel}
                   onClick={() => fileInput.current?.click()}
                 >
-                  <IconUploadOutline14 />
-                  {STRINGS.importCard}
-                </Button>
-                <Button variant="outlined" size="s" onClick={() => setPasteOpen(true)}>
-                  {STRINGS.importPaste}
-                </Button>
-                <Button
-                  variant="outlined"
-                  size="s"
-                  className={styles.withIcon}
+                  {STRINGS.actionImport}
+                </button>
+                <button
+                  type="button"
+                  className={styles.textAction}
+                  aria-label={STRINGS.pasteLabel}
+                  onClick={() => setPasteOpen(true)}
+                >
+                  {STRINGS.actionPaste}
+                </button>
+                <button
+                  type="button"
+                  className={styles.textAction}
+                  aria-label={STRINGS.exportLabel}
                   onClick={exportDraft}
                 >
-                  <IconDownloadOutline16 />
-                  {STRINGS.exportJson}
-                </Button>
+                  {STRINGS.actionExport}
+                </button>
+              </div>
+              <div className={styles.footerPrimary}>
                 {editing ? (
                   <Button
                     variant="dangerOutlined"
-                    size="s"
-                    className={styles.withIcon}
+                    size="m"
+                    disabled={busy}
                     onClick={() => setConfirmDelete(true)}
                   >
-                    <IconTrashOutline16 />
                     {STRINGS.delete}
                   </Button>
                 ) : null}
-              </div>
-              <div className={styles.footerRight}>
                 <Button variant="outlined" size="m" disabled={busy} onClick={tryClose}>
                   {STRINGS.cancel}
                 </Button>
-                <Button variant="primary" size="m" disabled={busy} onClick={() => void save()}>
+                <Button
+                  variant="primary"
+                  size="m"
+                  className={styles.save}
+                  disabled={busy}
+                  onClick={() => void save()}
+                >
                   {busy ? STRINGS.saving : STRINGS.save}
                 </Button>
               </div>
@@ -580,6 +612,28 @@ export const CharacterEditor = () => {
     document.body
   )
 }
+
+/** 分节：等宽编号 + 中文名，上方一条发丝线 */
+const Section = ({
+  code,
+  name,
+  children,
+}: {
+  code: string
+  name: string
+  children: ReactNode
+}) => (
+  <section className={styles.section}>
+    <h3 className={styles.sectionTitle}>
+      <span className={styles.sectionCode}>{code}</span>
+      <span className={styles.sectionDot} aria-hidden="true">
+        ·
+      </span>
+      <span className={styles.sectionName}>{name}</span>
+    </h3>
+    <div className={styles.sectionBody}>{children}</div>
+  </section>
+)
 
 /** 12 个色点 + 一条滑杆；点色点直接换色相，滑杆做细调 */
 const HuePicker = ({
@@ -620,7 +674,7 @@ const HuePicker = ({
   </div>
 )
 
-/** 带标题的多行输入；hint 用楷体，像页边批注 */
+/** 带标题的多行输入；提示用等宽小字，像仪器的状态注记 */
 const Field = ({
   label,
   value,

@@ -23,50 +23,57 @@
 
 /* 深色：墨底 + 纸色字 + 余烬强调 */
 body {
-  --rp-bg: #131218;
-  --rp-bg-deep: #0d0c11;
-  --rp-surface: #1a1922;
-  --rp-raised: #232231;
-  --rp-overlay: rgba(10, 9, 14, 0.72);
-  --rp-text: #f1ebe0;
-  --rp-text-secondary: #b4ada1;
-  --rp-text-muted: #7b766d;
-  --rp-line: rgba(241, 235, 224, 0.08);
-  --rp-line-strong: rgba(241, 235, 224, 0.16);
-  --rp-ember: #e3a06a;
-  --rp-ember-strong: #f0b583;
-  --rp-ember-soft: rgba(227, 160, 106, 0.14);
-  --rp-paper-tint: rgba(241, 235, 224, 0.04);
-  --rp-user-bubble: rgba(241, 235, 224, 0.07);
-  --rp-user-bubble-border: rgba(241, 235, 224, 0.1);
-  --rp-shadow-float: 0 18px 48px rgba(0, 0, 0, 0.45);
-  --rp-shadow-soft: 0 2px 12px rgba(0, 0, 0, 0.25);
-  --rp-grain-opacity: 0.032;
-  --rp-vignette: radial-gradient(120% 90% at 50% 0%, rgba(255, 214, 170, 0.05), transparent 60%),
-    radial-gradient(90% 70% at 50% 110%, rgba(0, 0, 0, 0.5), transparent 70%);
+  /* 深空底：星野、星云、观测舱玻璃 */
+  --rp-bg: #05060c;
+  --rp-bg-deep: #03040a;
+  --rp-surface: rgba(17, 18, 33, 0.72);
+  --rp-raised: #14152a;
+  --rp-overlay: rgba(3, 4, 10, 0.78);
+  --rp-text: #f3f0e9;
+  --rp-text-secondary: #b9b6c8;
+  --rp-text-muted: #7d7c93;
+  --rp-line: rgba(190, 200, 255, 0.1);
+  --rp-line-strong: rgba(190, 200, 255, 0.2);
+  /* 星辉金：全局强调色，角色色相在此基础上叠加 */
+  --rp-ember: #e6d7a8;
+  --rp-ember-strong: #f5ecc4;
+  --rp-ember-soft: rgba(230, 215, 168, 0.12);
+  --rp-paper-tint: rgba(190, 200, 255, 0.05);
+  --rp-user-bubble: rgba(190, 200, 255, 0.07);
+  --rp-user-bubble-border: rgba(190, 200, 255, 0.14);
+  --rp-star: #fbf8f1;
+  --rp-star-dim: rgb(176 196 255 / 0.55);
+  --rp-shadow-float: 0 24px 60px rgba(0, 0, 0, 0.55);
+  --rp-shadow-soft: 0 4px 18px rgba(0, 0, 0, 0.35);
+  --rp-grain-opacity: 0.026;
+  --rp-vignette: radial-gradient(120% 90% at 50% 0%, rgba(150, 180, 255, 0.07), transparent 62%),
+    radial-gradient(90% 70% at 50% 110%, rgba(0, 0, 0, 0.6), transparent 70%);
 }
 
 body:not([data-ds-dark-theme]) {
-  --rp-bg: #f5f0e6;
-  --rp-bg-deep: #ece5d7;
-  --rp-surface: #fffcf5;
+  /* 日光观测台：蓝图纸、墨蓝字 */
+  --rp-bg: #eaeef7;
+  --rp-bg-deep: #dfe4f0;
+  --rp-surface: rgba(255, 255, 255, 0.78);
   --rp-raised: #ffffff;
-  --rp-overlay: rgba(60, 50, 40, 0.28);
-  --rp-text: #241f1b;
-  --rp-text-secondary: #5c554c;
-  --rp-text-muted: #8a8378;
-  --rp-line: rgba(36, 31, 27, 0.1);
-  --rp-line-strong: rgba(36, 31, 27, 0.18);
-  --rp-ember: #a85a28;
-  --rp-ember-strong: #8c4a1f;
-  --rp-ember-soft: rgba(168, 90, 40, 0.1);
-  --rp-paper-tint: rgba(36, 31, 27, 0.03);
-  --rp-user-bubble: rgba(168, 90, 40, 0.08);
-  --rp-user-bubble-border: rgba(168, 90, 40, 0.16);
-  --rp-shadow-float: 0 18px 48px rgba(80, 62, 40, 0.14);
-  --rp-shadow-soft: 0 2px 12px rgba(80, 62, 40, 0.08);
-  --rp-grain-opacity: 0.022;
-  --rp-vignette: radial-gradient(120% 90% at 50% 0%, rgba(255, 236, 200, 0.6), transparent 60%);
+  --rp-overlay: rgba(20, 28, 48, 0.32);
+  --rp-text: #10131f;
+  --rp-text-secondary: #4a5068;
+  --rp-text-muted: #767c93;
+  --rp-line: rgba(20, 30, 60, 0.12);
+  --rp-line-strong: rgba(20, 30, 60, 0.22);
+  --rp-ember: #3f5aa6;
+  --rp-ember-strong: #2f4685;
+  --rp-ember-soft: rgba(63, 90, 166, 0.1);
+  --rp-paper-tint: rgba(20, 30, 60, 0.035);
+  --rp-user-bubble: rgba(63, 90, 166, 0.08);
+  --rp-user-bubble-border: rgba(63, 90, 166, 0.18);
+  --rp-star: #10131f;
+  --rp-star-dim: rgb(40 60 120 / 0.45);
+  --rp-shadow-float: 0 18px 48px rgba(30, 40, 70, 0.16);
+  --rp-shadow-soft: 0 2px 12px rgba(30, 40, 70, 0.1);
+  --rp-grain-opacity: 0.02;
+  --rp-vignette: radial-gradient(120% 90% at 50% 0%, rgba(255, 255, 255, 0.75), transparent 60%);
 }
 
 /* 纸面颗粒：一层可复用的伪元素背景，任何容器加上就能有质感 */

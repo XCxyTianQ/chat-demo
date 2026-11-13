@@ -4,6 +4,13 @@ export const STRINGS = {
   newTitle: '新角色',
   editTitle: '编辑角色',
   close: '关闭',
+  archiveTitle: 'STELLAR FILE · ASTRA',
+  identityCode: 'IDENTITY',
+  identityName: '身份',
+  settingCode: 'SETTING',
+  settingName: '设定',
+  voiceCode: 'VOICE',
+  voiceName: '语料',
 
   // 预览区
   avatarUpload: '上传头像',
@@ -23,7 +30,6 @@ export const STRINGS = {
   hueValue: (hue: number) => `${hue}°`,
 
   // 设定分组
-  settingsTitle: '设定',
   descriptionLabel: '角色设定',
   descriptionPlaceholder: '外貌、身份、来处、与你的关系……',
   personalityLabel: '性格',
@@ -40,7 +46,13 @@ export const STRINGS = {
   systemPromptPlaceholder: '追加给模型的本角色专属指令',
   optional: '选填',
 
-  // 底部操作条
+  // 底部操作条（左侧等宽小字，短一点）
+  actionImport: '导入',
+  actionPaste: '粘贴',
+  actionExport: '导出',
+  importCardLabel: '导入角色卡',
+  pasteLabel: '粘贴导入',
+  exportLabel: '导出 JSON',
   importCard: '导入角色卡',
   importPaste: '粘贴导入',
   exportJson: '导出 JSON',
@@ -76,14 +88,15 @@ export const STRINGS = {
   importEmpty: '请先粘贴角色卡 JSON',
   importReady: '已载入角色卡，保存后生效',
 
-  // 人格面板
-  personaTitle: '人格',
+  // 观测者（人格）面板
+  observerTitle: '观测者',
+  observerEyebrow: 'OBSERVER · 你在故事里的身份',
+  observerHint: '角色会以这个身份称呼你',
   personaNameLabel: '名字',
   personaNamePlaceholder: '你在故事里的名字',
   personaNameRequired: '请先填写名字',
   personaDescriptionLabel: '设定',
   personaDescriptionHint: '你在故事里的身份、外貌、与角色的关系',
-  personaHint: '人格会影响角色如何称呼你。',
   personaSaved: '人格已保存',
   personaSaveFailed: '人格保存失败，请稍后再试',
 }

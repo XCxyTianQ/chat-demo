@@ -7,8 +7,9 @@ import { editMessage, retryUpload } from '../../services/chat/store.js'
 import { stopReadAloud } from '../../services/speech/readAloud.js'
 import type { UserMessage as UserMessageType } from '../../services/chat/types.js'
 import { Button } from '../base/Button.js'
-import { IconButton } from '../base/IconButton.js'
 import { ensureApiKey } from '../settings/settingsDialogState.js'
+import { sceneStrings } from '../session/strings.js'
+import { ActionButton } from './ActionButton.js'
 import {
   BranchSwitcher,
   type MessageVersions,
@@ -80,6 +81,10 @@ export const UserMessage = memo(function UserMessage({
       ) : null}
       {editing ? (
         <div className={styles.editor}>
+          <div className={styles.head}>
+            <span className={styles.dot} aria-hidden />
+            <span className={styles.tag}>{sceneStrings.uplink}</span>
+          </div>
           <textarea
             ref={textareaRef}
             className={styles.textarea}
@@ -112,14 +117,21 @@ export const UserMessage = memo(function UserMessage({
         </div>
       ) : (
         <>
-          {message.content ? <div className={styles.bubble}>{message.content}</div> : null}
+          {message.content ? (
+            <div className={styles.card}>
+              <div className={styles.head}>
+                <span className={styles.dot} aria-hidden />
+                <span className={styles.tag}>{sceneStrings.uplink}</span>
+              </div>
+              <div className={styles.text}>{message.content}</div>
+            </div>
+          ) : null}
           <div className={styles.bottom}>
             <div className={clsx(styles.actions, isLast && styles.alwaysShow)}>
               {message.content ? <CopyButton text={message.content} /> : null}
-              <IconButton
+              <ActionButton
                 icon={<IconEditOutline16 />}
-                tooltip={t('editMessage')}
-                tooltipPlacement="bottom"
+                label={sceneStrings.edit}
                 disabled={busy}
                 onClick={() => {
                   setDraft(message.content)

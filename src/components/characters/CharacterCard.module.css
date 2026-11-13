@@ -6,7 +6,7 @@
   --char-glow: hsl(var(--char-hue) 70% 55% / 0.22);
 }
 
-/* ---------- 侧栏紧凑行 ---------- */
+/* ============ 侧栏 · 星图行 ============ */
 
 .row {
   position: relative;
@@ -24,7 +24,9 @@
 
 .rowActive {
   border-left-color: var(--rp-ember);
-  background: linear-gradient(90deg, var(--rp-ember-soft), transparent 82%);
+  background:
+    linear-gradient(90deg, var(--rp-ember-soft), transparent 88%),
+    var(--rp-paper-tint);
 }
 
 .rowMain {
@@ -33,7 +35,7 @@
   flex: 1;
   gap: 11px;
   min-width: 0;
-  padding: 9px 38px 9px 14px;
+  padding: 8px 44px 8px 12px;
   border: none;
   background: transparent;
   color: inherit;
@@ -47,13 +49,21 @@
   outline-offset: -2px;
 }
 
-.rowAvatar {
-  display: block;
+/* 深色观测窗：星座线本身是浅色，深底在两种主题下都成立 */
+.rowThumb {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
   width: 40px;
   height: 40px;
-  border-radius: 12px;
-  object-fit: cover;
+  overflow: hidden;
+  border: 1px solid var(--rp-line-strong);
+  border-radius: 10px;
+  background:
+    radial-gradient(120% 120% at 28% 18%, rgb(18 22 44 / 0.95), rgb(5 6 12 / 0.98)),
+    #05060c;
 }
 
 .rowText {
@@ -83,7 +93,24 @@
   text-overflow: ellipsis;
 }
 
-/* ---------- 编辑按钮（两种形态共用） ---------- */
+.rowCatalog {
+  position: absolute;
+  top: 50%;
+  right: 13px;
+  transform: translateY(-50%);
+  font-family: var(--astra-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: var(--rp-text-muted);
+  transition: opacity var(--rp-dur) var(--rp-ease);
+}
+
+.row:hover .rowCatalog,
+.row:focus-within .rowCatalog {
+  opacity: 0;
+}
+
+/* ============ 编辑按钮（两种形态共用） ============ */
 
 .edit {
   display: flex;
@@ -92,7 +119,7 @@
   width: 26px;
   height: 26px;
   padding: 0;
-  border: none;
+  border: 1px solid transparent;
   border-radius: 8px;
   background-color: transparent;
   color: var(--rp-text-muted);
@@ -101,7 +128,7 @@
   transition:
     opacity var(--rp-dur) var(--rp-ease),
     color var(--rp-dur) var(--rp-ease),
-    background-color var(--rp-dur) var(--rp-ease);
+    border-color var(--rp-dur) var(--rp-ease);
 }
 
 .row:hover .edit,
@@ -114,7 +141,7 @@
 
 .edit:hover {
   color: var(--rp-ember);
-  background-color: var(--rp-paper-tint);
+  border-color: var(--rp-line-strong);
 }
 
 .edit:focus-visible {
@@ -122,43 +149,46 @@
   outline-offset: 1px;
 }
 
-@media (hover: none) {
-  .edit {
-    opacity: 0.65;
-  }
-}
-
 .row .edit {
   position: absolute;
   top: 50%;
-  right: 8px;
+  right: 10px;
   transform: translateY(-50%);
 }
 
-/* ---------- 画廊大卡片 ---------- */
+@media (hover: none) {
+  .edit {
+    opacity: 0.6;
+  }
+
+  .rowCatalog {
+    opacity: 0;
+  }
+}
+
+/* ============ 画廊 · 星图卡 ============ */
 
 .card {
   position: relative;
   display: flex;
-  min-height: 214px;
+  flex-direction: column;
+  aspect-ratio: 3 / 4;
+  min-height: 300px;
   overflow: hidden;
   border: 1px solid var(--rp-line);
   border-radius: var(--rp-radius-l);
   background-color: var(--rp-surface);
-  background-image:
-    radial-gradient(130% 96% at 8% -10%, hsl(var(--char-hue) 62% 58% / 0.22), transparent 62%),
-    linear-gradient(158deg, hsl(var(--char-hue) 48% 52% / 0.1), transparent 58%);
   transition:
-    transform 220ms var(--rp-ease),
-    border-color 220ms var(--rp-ease),
-    box-shadow 220ms var(--rp-ease);
+    transform 260ms var(--rp-ease),
+    border-color 260ms var(--rp-ease),
+    box-shadow 260ms var(--rp-ease);
 }
 
 @media (hover: hover) {
   .card:hover {
-    transform: translateY(-3px);
+    transform: translateY(-4px);
     border-color: var(--char-accent);
-    box-shadow: 0 16px 34px var(--char-glow);
+    box-shadow: 0 20px 44px var(--char-glow);
   }
 }
 
@@ -170,35 +200,93 @@
   border-color: var(--rp-line-strong);
 }
 
+/* 整卡点击区：透明按钮盖在装饰层之上，键盘聚焦与回车由原生 button 负责 */
 .cardMain {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 8px;
-  width: 100%;
-  padding: 22px 22px 20px;
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  padding: 0;
   border: none;
+  border-radius: inherit;
   background: transparent;
-  color: inherit;
-  font: inherit;
-  text-align: left;
   cursor: pointer;
 }
 
 .cardMain:focus-visible {
   outline: 2px solid var(--char-accent);
-  outline-offset: -4px;
-  border-radius: var(--rp-radius-l);
+  outline-offset: -3px;
 }
 
-.cardAvatar {
-  display: block;
-  width: 96px;
-  height: 96px;
-  margin-bottom: 6px;
-  border-radius: 20px;
-  object-fit: cover;
-  box-shadow: 0 8px 20px hsl(var(--char-hue) 60% 20% / 0.35);
+/* 上半：星野 + 大星座 */
+.sky {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.skyField {
+  position: absolute;
+  inset: 0;
+}
+
+.constellation {
+  position: absolute;
+  top: 13%;
+  left: 50%;
+  opacity: 0.85;
+  transform: translateX(-50%);
+  transition:
+    opacity 260ms var(--rp-ease),
+    filter 260ms var(--rp-ease);
+}
+
+.card:hover .constellation,
+.card:focus-within .constellation {
+  opacity: 1;
+  filter: brightness(1.35);
+}
+
+.cardCatalog,
+.cardOpen {
+  position: absolute;
+  right: 12px;
+  font-family: var(--astra-mono);
+  font-size: 9px;
+  line-height: 14px;
+  letter-spacing: 0.14em;
+  transition: opacity 220ms var(--rp-ease);
+}
+
+/* 星表号常驻右下；hover 时它上方浮出 OPEN 标签 */
+.cardCatalog {
+  bottom: 9px;
+  color: var(--rp-text-muted);
+}
+
+.cardOpen {
+  bottom: 26px;
+  color: var(--rp-ember);
+  letter-spacing: 0.2em;
+  opacity: 0;
+}
+
+.card:hover .cardOpen,
+.card:focus-within .cardOpen {
+  opacity: 1;
+}
+
+/* 下半：玻璃铭牌 */
+.plate {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  gap: 6px;
+  padding: 14px 16px 16px;
+  border-top: 1px solid var(--rp-line);
+  background-color: var(--rp-surface);
+  backdrop-filter: blur(18px);
 }
 
 .cardName {
@@ -212,8 +300,8 @@
 .cardTagline {
   display: -webkit-box;
   overflow: hidden;
-  font-size: 14px;
-  line-height: 21px;
+  font-size: 12px;
+  line-height: 18px;
   color: var(--rp-text-secondary);
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
@@ -223,26 +311,36 @@
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  margin-top: auto;
-  padding-top: 12px;
+  margin-top: 2px;
 }
 
 .cardTag {
-  padding: 2px 9px;
+  padding: 1px 7px;
   border: 1px solid var(--rp-line-strong);
   border-radius: 999px;
-  font-size: 11px;
-  line-height: 17px;
-  letter-spacing: 0.02em;
+  font-family: var(--astra-mono);
+  font-size: 10px;
+  line-height: 16px;
+  letter-spacing: 0.06em;
   color: var(--rp-text-muted);
 }
 
 .card .edit {
   position: absolute;
-  right: 14px;
-  bottom: 14px;
-  width: 28px;
-  height: 28px;
-  background-color: var(--rp-raised);
-  border: 1px solid var(--rp-line);
+  top: 10px;
+  right: 10px;
+  z-index: 3;
+  background-color: rgb(6 8 16 / 0.45);
+  backdrop-filter: blur(6px);
+}
+
+@media not all and (min-width: 768px) {
+  .card {
+    aspect-ratio: 5 / 4;
+    min-height: 0;
+  }
+
+  .card .edit {
+    opacity: 0.7;
+  }
 }

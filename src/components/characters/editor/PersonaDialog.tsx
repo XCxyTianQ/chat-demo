@@ -8,7 +8,7 @@ import { setPersona, useCharacters } from '../../../services/characters/store.js
 import { STRINGS } from './strings.js'
 import styles from './PersonaDialog.module.css'
 
-/** 人格面板：全局唯一的一份「我是谁」，角色据此称呼你。 */
+/** 观测者：全局唯一的一份「我是谁」，角色据此称呼你。 */
 export const PersonaDialog = () => {
   const open = useRpUi((state) => state.personaOpen)
   return open ? <PersonaContent /> : null
@@ -46,7 +46,12 @@ const PersonaContent = () => {
 
   return (
     <Modal
-      title={STRINGS.personaTitle}
+      title={
+        <span className={styles.titleBlock}>
+          <span className={styles.eyebrow}>{STRINGS.observerEyebrow}</span>
+          <span className={styles.title}>{STRINGS.observerTitle}</span>
+        </span>
+      }
       closable
       className={styles.dialog}
       mainClassName={styles.content}
@@ -56,7 +61,13 @@ const PersonaContent = () => {
           <Button variant="outlined" size="m" disabled={busy} onClick={close}>
             {STRINGS.cancel}
           </Button>
-          <Button variant="primary" size="m" disabled={busy} onClick={() => void save()}>
+          <Button
+            variant="primary"
+            size="m"
+            className={styles.save}
+            disabled={busy}
+            onClick={() => void save()}
+          >
             {busy ? STRINGS.saving : STRINGS.save}
           </Button>
         </>
@@ -69,23 +80,17 @@ const PersonaContent = () => {
           alt=""
         />
         <div className={styles.previewText}>
-          <span className={styles.previewName}>
-            {name.trim() || STRINGS.personaNamePlaceholder}
-          </span>
-          <span className={styles.previewHint}>{STRINGS.personaHint}</span>
+          <input
+            className={styles.nameInput}
+            value={name}
+            placeholder={STRINGS.personaNamePlaceholder}
+            aria-label={STRINGS.personaNameLabel}
+            onChange={(event) => setName(event.target.value)}
+            autoFocus
+          />
+          <span className={styles.previewHint}>{STRINGS.observerHint}</span>
         </div>
       </div>
-
-      <label className={styles.field}>
-        <span className={styles.fieldLabel}>{STRINGS.personaNameLabel}</span>
-        <input
-          className={styles.input}
-          value={name}
-          placeholder={STRINGS.personaNamePlaceholder}
-          onChange={(event) => setName(event.target.value)}
-          autoFocus
-        />
-      </label>
 
       <label className={styles.field}>
         <span className={styles.fieldLabel}>{STRINGS.personaDescriptionLabel}</span>

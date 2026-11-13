@@ -10,10 +10,26 @@
   --char-accent-strong: hsl(var(--char-hue) 68% 74%);
   --char-accent-soft: hsl(var(--char-hue) 45% 55% / 0.16);
   --char-glow: hsl(var(--char-hue) 70% 55% / 0.22);
+  /* 编号 / 坐标 / 状态用的等宽体，外壳各模块共用 */
+  --astra-mono: ui-monospace, 'SFMono-Regular', Menlo, Consolas, 'Liberation Mono', monospace;
+}
+
+/* 整页星野：背景层只做背景，不接收事件 */
+.starLayer {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* 日光观测台：把深空翻成蓝图白底、星点变深色细点（只影响整页背景，卡片里的观测窗保持深色） */
+body:not([data-ds-dark-theme]) .starLayer {
+  filter: invert(1) hue-rotate(180deg) saturate(0.72);
 }
 
 .main {
   position: relative;
+  z-index: 2;
   display: flex;
   flex-direction: column;
   flex: 1;
@@ -21,21 +37,7 @@
   min-height: 0;
   /* clip 而不是 hidden：hidden 仍可被 focus / scrollIntoView 程序化滚动，会把整页顶上去 */
   overflow: clip;
-  background-color: var(--rp-bg);
-  background-image: var(--rp-vignette);
-}
-
-/* 缓慢流动的暖色光晕：只做 opacity / transform，很低的存在感 */
-.main::before {
-  content: '';
-  position: absolute;
-  inset: -25%;
-  z-index: 0;
-  pointer-events: none;
-  background-image:
-    radial-gradient(42% 46% at 64% 16%, hsl(var(--char-hue) 72% 56% / 0.11), transparent 70%),
-    radial-gradient(40% 42% at 22% 84%, hsl(var(--char-hue) 62% 48% / 0.07), transparent 72%);
-  animation: rp-drift 34s ease-in-out infinite;
+  background-color: transparent;
 }
 
 .content {
@@ -59,6 +61,7 @@
   background-color: var(--rp-surface);
   color: var(--rp-text-secondary);
   font-size: 13px;
+  backdrop-filter: blur(18px);
 }
 
 .loadingView {
@@ -74,13 +77,19 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 16px;
+  gap: 14px;
   padding: 24px;
-  font-family: var(--rp-font-quote);
-  font-size: 14px;
-  letter-spacing: 0.04em;
+  font-size: 13px;
+  letter-spacing: 0.08em;
   color: var(--rp-text-muted);
   text-align: center;
+}
+
+.loadingMark {
+  font-size: 18px;
+  line-height: 1;
+  color: var(--rp-ember);
+  animation: rp-breathe 4s ease-in-out infinite;
 }
 
 @media not all and (min-width: 768px) {

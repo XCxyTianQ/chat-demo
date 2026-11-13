@@ -1,46 +1,117 @@
-/* 浮起的输入卡片：纸面、细描边、聚焦时透出角色色 */
+/* 玻璃控制台：左竖排 TRANSMIT、状态行、文本框、工具行与发射按钮 */
 .wrapper {
-  --line-height: 26px;
-  --input-padding-top: 14px;
+  --line-height: 27px;
 
+  position: relative;
   display: flex;
-  flex-direction: column;
   box-sizing: border-box;
   width: 100%;
-  cursor: text;
-  font-size: 15px;
-  line-height: var(--line-height);
-  border-radius: var(--rp-radius-l);
   border: 1px solid var(--rp-line-strong);
+  border-radius: 18px;
   background: var(--rp-surface);
-  box-shadow: var(--rp-shadow-soft);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  box-shadow:
+    0 0 44px var(--char-glow),
+    var(--rp-shadow-float);
   overflow: hidden;
+  cursor: text;
   transition:
     border-color var(--rp-dur) var(--rp-ease),
     box-shadow var(--rp-dur) var(--rp-ease);
 
   &:focus-within {
-    border-color: var(--char-accent-soft);
-    border-color: color-mix(in srgb, var(--char-accent) 35%, transparent);
+    border-color: var(--rp-ember-soft);
+    border-color: color-mix(in srgb, var(--rp-ember) 42%, transparent);
     box-shadow:
-      0 0 0 3px var(--char-accent-soft),
-      var(--rp-shadow-soft);
+      0 0 0 1px var(--rp-ember-soft),
+      0 0 56px var(--char-glow),
+      var(--rp-shadow-float);
   }
 }
 
 .session {
-  box-shadow: var(--rp-shadow-soft);
+  box-shadow:
+    0 0 44px var(--char-glow),
+    var(--rp-shadow-float);
 }
 
 .home {
-  box-shadow: var(--rp-shadow-float);
+  box-shadow:
+    0 0 64px var(--char-glow),
+    var(--rp-shadow-float);
+}
+
+/* 左侧竖排标识 */
+.rail {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  padding: 0 9px;
+  border-right: 1px solid var(--rp-line);
+  font-family: var(--astra-mono, ui-monospace, monospace);
+  font-size: 8px;
+  line-height: 1;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--rp-text-muted);
+  writing-mode: vertical-rl;
+  user-select: none;
+}
+
+.main {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  padding: 9px 12px 9px 14px;
+}
+
+/* 状态行：LINK STABLE · deepseek-flash · 128 字 */
+.status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 2px 7px;
+  font-family: var(--astra-mono, ui-monospace, monospace);
+  font-size: 9px;
+  line-height: 1;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--rp-text-muted);
+  user-select: none;
+}
+
+.statusDot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--rp-ember);
+  box-shadow: 0 0 8px 1px var(--rp-ember-soft);
+  animation: statusBreathe 3.2s ease-in-out infinite;
+}
+
+@keyframes statusBreathe {
+  0%,
+  100% {
+    opacity: 0.45;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
+.statusSep {
+  opacity: 0.5;
 }
 
 .attachments {
   display: flex;
   align-items: flex-end;
   gap: 10px;
-  padding: 12px 12px 0;
+  padding: 2px 0 8px;
   overflow-x: auto;
   cursor: default;
 }
@@ -51,7 +122,7 @@
   box-sizing: border-box;
   width: 64px;
   height: 64px;
-  border-radius: 14px;
+  border-radius: 10px;
   border: 1px solid var(--rp-line);
   overflow: hidden;
   background-color: var(--rp-paper-tint);
@@ -94,7 +165,7 @@
   }
 }
 
-/* 上传失败：红色描边 + 暗色蒙层，可重试时中间为重试图标，原因写在图标下方 */
+/* 上传失败：红色描边 + 暗色蒙层 */
 .attachmentFailed {
   border-color: var(--dsw-alias-state-error-primary);
 }
@@ -109,8 +180,8 @@
   border: none;
   padding: 0 3px;
   cursor: pointer;
-  color: var(--dsw-static-neutral-bluish-00);
-  background-color: rgba(0, 0, 0, 0.48);
+  color: var(--rp-text);
+  background-color: rgba(3, 4, 10, 0.55);
 
   svg {
     width: 18px;
@@ -118,12 +189,11 @@
   }
 }
 
-/* 不可重试：蒙层更浅，原因贴底 */
 .failedStatic {
   justify-content: flex-end;
   padding-bottom: 7px;
   cursor: default;
-  background-color: rgba(0, 0, 0, 0.24);
+  background-color: rgba(3, 4, 10, 0.32);
 }
 
 .failedReason {
@@ -160,7 +230,6 @@
   transition: opacity var(--rp-dur) var(--rp-ease);
 }
 
-/* 不可重试时删除按钮常显，提示需要先删除 */
 .invalidRemove {
   opacity: 1;
   color: var(--dsw-alias-label-primary-foreground);
@@ -178,12 +247,12 @@
   box-sizing: border-box;
   width: 100%;
   /* 至少一行，最多八行（由 .mirror 的 max-height 决定） */
-  min-height: calc(var(--line-height) + var(--input-padding-top));
+  min-height: calc(var(--line-height) + 4px);
   margin: 0;
-  padding: var(--input-padding-top) 16px 0 18px;
+  padding: 2px 4px 4px;
   border: none;
   font: inherit;
-  font-size: 15px;
+  font-size: 16px;
   line-height: var(--line-height);
   font-variant-ligatures: no-contextual;
   word-break: break-word;
@@ -199,12 +268,10 @@
   overscroll-behavior: contain;
   background-color: transparent;
   color: var(--rp-text);
-  caret-color: var(--char-accent);
+  caret-color: var(--rp-ember);
 
   &::placeholder {
     color: var(--rp-text-muted);
-    font-family: var(--rp-font-quote);
-    letter-spacing: 0.02em;
     user-select: none;
   }
 }
@@ -217,43 +284,45 @@
 .mirror {
   visibility: hidden;
   pointer-events: none;
-  max-height: calc(var(--line-height) * 8 + var(--input-padding-top));
+  max-height: calc(var(--line-height) * 8 + 8px);
 }
 
-.functionRow {
+.toolRow {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 2px 12px 12px;
+  padding: 4px 0 0;
 }
 
 .toggles {
   display: flex;
   flex: 1;
   align-items: center;
-  gap: 6px;
+  gap: 2px;
   min-width: 0;
 }
 
-.collapsedToggles .toggleLabel {
+.collapsedToggles .switchLabel {
   display: none;
 }
 
-.toggle {
+/* 开关：等宽小字，激活时余烬色 + 星点前缀 */
+.switch {
+  position: relative;
   display: inline-flex;
   flex-shrink: 0;
   align-items: center;
-  justify-content: center;
-  gap: 6px;
-  height: 30px;
-  padding: 0 10px;
-  border-radius: 999px;
+  gap: 5px;
+  height: 26px;
+  padding: 0 8px;
   border: 1px solid transparent;
-  background-color: transparent;
-  color: var(--rp-text-secondary);
-  font: inherit;
-  font-size: 13px;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--rp-text-muted);
+  font-family: var(--astra-mono, ui-monospace, monospace);
+  font-size: 10px;
   line-height: 1;
+  letter-spacing: 0.12em;
   white-space: nowrap;
   cursor: pointer;
   user-select: none;
@@ -264,15 +333,17 @@
 
   svg {
     flex-shrink: 0;
+    width: 13px;
+    height: 13px;
   }
 
   &:hover:not(:disabled) {
-    background-color: var(--rp-paper-tint);
+    background: var(--rp-paper-tint);
     color: var(--rp-text);
   }
 
   &:focus-visible {
-    outline: 2px solid var(--char-accent-soft);
+    outline: 2px solid var(--rp-ember-soft);
     outline-offset: 1px;
   }
 
@@ -280,95 +351,128 @@
     opacity: 0.4;
     cursor: not-allowed;
   }
-
-  &.selected {
-    color: var(--rp-ember);
-    background-color: var(--rp-ember-soft);
-    border-color: var(--rp-ember-soft);
-
-    &:hover:not(:disabled) {
-      color: var(--rp-ember-strong);
-      background-color: var(--rp-ember-soft);
-    }
-  }
 }
 
-/* 只有图标的工具按钮（附件） */
-.iconToggle {
-  width: 30px;
-  padding: 0;
+.switchLabel {
+  padding-top: 1px;
+}
+
+.on,
+.on:hover:not(:disabled) {
+  border-color: var(--rp-ember-soft);
+  background: var(--rp-ember-soft);
+  color: var(--rp-ember);
+
+  &::before {
+    content: '';
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--rp-ember);
+    box-shadow: 0 0 8px 1px var(--rp-ember);
+  }
 }
 
 .right {
   display: flex;
   flex-shrink: 0;
   align-items: center;
-  gap: 2px;
+  gap: 6px;
   margin-left: auto;
 }
 
-.sendButton {
+/* 发射按钮：星辉金实心圆，悬停时外扩一圈脉冲光环 */
+.launch {
+  position: relative;
   display: flex;
+  flex-shrink: 0;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
-  width: 34px;
-  height: 34px;
-  margin-left: 6px;
+  width: 36px;
+  height: 36px;
   padding: 0;
   border: none;
   border-radius: 50%;
   background: var(--rp-ember);
-  color: var(--rp-bg);
+  color: var(--rp-bg-deep);
   cursor: pointer;
   transition:
     background var(--rp-dur) var(--rp-ease),
     opacity var(--rp-dur) var(--rp-ease);
 
-  &:not(.disabled):hover {
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: -3px;
+    border-radius: 50%;
+    border: 1px solid var(--rp-ember);
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  &:not(.idle):hover {
     background: var(--rp-ember-strong);
+
+    &::after {
+      opacity: 0.7;
+      animation: pulse 1.8s ease-out infinite;
+    }
   }
 
   &:focus-visible {
     outline: 2px solid var(--rp-ember-soft);
-    outline-offset: 2px;
-  }
-
-  &.disabled {
-    opacity: 0.35;
-    cursor: not-allowed;
+    outline-offset: 3px;
   }
 }
 
-/* 生成中：余烬描边的停止键 */
-.stopButton {
-  background: transparent;
+/* 发射按钮悬停时的外扩光环 */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.75;
+  }
+
+  100% {
+    transform: scale(1.55);
+    opacity: 0;
+  }
+}
+
+.idle {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* 停止态：方形描边 */
+.halt {
+  border-radius: 8px;
   border: 1px solid var(--rp-ember);
+  background: transparent;
   color: var(--rp-ember);
-  animation: stopBreathe 1.8s ease-in-out infinite;
 
   &:hover {
     background: var(--rp-ember-soft);
-    color: var(--rp-ember-strong);
-  }
-}
-
-@keyframes stopBreathe {
-  0%,
-  100% {
-    opacity: 0.7;
-  }
-
-  50% {
-    opacity: 1;
   }
 }
 
 @media not all and (min-width: 768px) {
   .wrapper {
     flex-shrink: 0;
-    border-radius: 16px;
+    border-radius: 14px;
     max-height: calc(var(--app-viewport-height, 100dvh) - 120px);
+  }
+
+  .rail {
+    display: none;
+  }
+
+  .main {
+    padding: 8px 10px;
   }
 
   .textareaWrapper {
@@ -376,12 +480,7 @@
   }
 
   .attachments,
-  .functionRow {
+  .toolRow {
     flex-shrink: 0;
-  }
-
-  .textarea,
-  .mirror {
-    padding: var(--input-padding-top) 14px 0 14px;
   }
 }

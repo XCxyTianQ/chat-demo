@@ -1,8 +1,38 @@
-/* 人格面板：居中弹窗。Modal 内置宽度 380px，这里用两个类提高一级特异性覆盖为 460px。 */
+/* 观测者：Astra 的玻璃弹窗。Modal 内置宽度 380px，这里提高一级特异性覆盖为 460px。 */
 .dialog.dialog {
+  --astra-mono: ui-monospace, 'SFMono-Regular', 'Cascadia Code', Menlo, monospace;
+
   width: 460px;
   max-width: calc(100vw - 32px);
+  border: 1px solid var(--rp-line);
   border-radius: var(--rp-radius-l);
+  background-color: var(--rp-surface);
+  box-shadow: var(--rp-shadow-float);
+  backdrop-filter: blur(18px) saturate(1.06);
+}
+
+.titleBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.eyebrow {
+  font-family: var(--astra-mono);
+  font-size: 9.5px;
+  line-height: 15px;
+  letter-spacing: 0.2em;
+  color: var(--rp-text-muted);
+  text-transform: uppercase;
+}
+
+.title {
+  font-family: var(--rp-font-display);
+  font-size: 19px;
+  line-height: 27px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: var(--rp-text);
 }
 
 .content {
@@ -11,7 +41,7 @@
   gap: 16px;
 }
 
-/* 头像与名字的预览：光晕用余烬色，与角色色区分开 */
+/* 头像 + 名字：观测者的身份牌 */
 .preview {
   display: flex;
   align-items: center;
@@ -19,82 +49,105 @@
   padding: 14px;
   border: 1px solid var(--rp-line);
   border-radius: var(--rp-radius-m);
-  background:
-    radial-gradient(120% 90% at 0% 0%, var(--rp-ember-soft), transparent 64%),
-    var(--rp-paper-tint);
+  background-color: var(--rp-paper-tint);
+  background-image:
+    radial-gradient(130% 130% at 0% 0%, var(--rp-ember-soft), transparent 62%),
+    radial-gradient(100% 120% at 100% 100%, hsl(205 70% 60% / 0.1), transparent 60%);
 }
 
 .avatar {
   flex-shrink: 0;
   width: 64px;
   height: 64px;
-  border-radius: 50%;
+  border-radius: 16px;
   object-fit: cover;
-  box-shadow: 0 0 0 1px var(--rp-line-strong);
+  box-shadow:
+    0 0 0 1px var(--rp-line-strong),
+    0 8px 22px var(--rp-ember-soft);
 }
 
 .previewText {
   display: flex;
+  flex: 1;
   flex-direction: column;
-  gap: 4px;
+  gap: 5px;
   min-width: 0;
 }
 
-.previewName {
-  overflow: hidden;
+.nameInput {
+  width: 100%;
+  padding: 0 0 5px;
+  border: none;
+  border-bottom: 1px solid var(--rp-line-strong);
+  background: transparent;
   font-family: var(--rp-font-display);
-  font-size: 20px;
-  line-height: 28px;
+  font-size: 18px;
+  line-height: 26px;
+  letter-spacing: 0.04em;
   color: var(--rp-text);
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  outline: none;
+  transition: border-color var(--rp-dur) var(--rp-ease);
+}
+
+.nameInput::placeholder {
+  color: var(--rp-text-muted);
+}
+
+.nameInput:focus {
+  border-bottom-color: var(--rp-ember);
 }
 
 .previewHint {
-  font-family: var(--rp-font-quote);
-  font-size: 12px;
-  line-height: 18px;
+  font-family: var(--astra-mono);
+  font-size: 9.5px;
+  line-height: 16px;
+  letter-spacing: 0.08em;
   color: var(--rp-text-muted);
 }
 
 .field {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 7px;
 }
 
 .fieldLabel {
-  font-size: 13px;
-  line-height: 20px;
+  font-size: 12.5px;
+  line-height: 19px;
+  letter-spacing: 0.04em;
   color: var(--rp-text-secondary);
 }
 
-.input,
 .textarea {
   width: 100%;
   box-sizing: border-box;
-  padding: 9px 12px;
+  padding: 10px 12px;
   border: 1px solid var(--rp-line);
   border-radius: var(--rp-radius-s);
-  background-color: var(--rp-bg);
+  background-color: var(--rp-surface);
   font: inherit;
   font-size: 13.5px;
-  line-height: 1.7;
+  line-height: 1.8;
   color: var(--rp-text);
   outline: none;
-  transition: border-color var(--rp-dur) var(--rp-ease);
-
-  &::placeholder {
-    color: var(--rp-text-muted);
-  }
-
-  &:focus {
-    border-color: var(--rp-ember);
-  }
+  resize: vertical;
+  transition:
+    border-color var(--rp-dur) var(--rp-ease),
+    box-shadow var(--rp-dur) var(--rp-ease);
 }
 
-.textarea {
-  resize: vertical;
+.textarea::placeholder {
+  color: var(--rp-text-muted);
+}
+
+.textarea:focus {
+  border-color: var(--rp-ember);
+  box-shadow: 0 0 0 1px var(--rp-ember-soft);
+}
+
+.save {
+  letter-spacing: 0.12em;
+  box-shadow: 0 6px 20px var(--rp-ember-soft);
 }
 
 @media not all and (min-width: 768px) {

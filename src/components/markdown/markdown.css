@@ -1,8 +1,8 @@
 .ds-markdown {
   font: var(--dsw-font-markdown-base);
   color: var(--rp-text);
-  /* 剧本正文：字号与行距按「书页」调，不再按工具文档 */
-  font-size: 15.5px;
+  /* 观测记录正文：衬线、宽行距 */
+  font-size: 16px;
   line-height: 1.95;
   letter-spacing: 0.01em;
 }
@@ -140,24 +140,30 @@
   }
 }
 
-/* 分隔：一枚淡墨短线，不做满宽 */
+/* 分隔：一枚星光短线，不做满宽 */
 .ds-markdown hr {
   display: block;
-  width: 72px;
-  margin: 30px auto;
+  width: 88px;
+  margin: 28px auto;
   border: none;
   height: 1px;
-  background: var(--rp-line-strong);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--rp-line-strong) 25%,
+    var(--rp-line-strong) 75%,
+    transparent
+  );
 }
 
-/* 引用：楷体的旁白，左侧一道淡墨 */
+/* 引用：楷体的旁白，左侧一道星光发丝线 */
 .ds-markdown blockquote {
   margin: 18px 0;
   padding: 2px 0 2px 16px;
-  border-left: 2px solid var(--char-accent-soft);
-  border-left-color: color-mix(in srgb, var(--char-accent) 30%, transparent);
+  border-left: 1px solid var(--char-accent-soft);
+  border-left-color: color-mix(in srgb, var(--char-accent) 34%, transparent);
   font-family: var(--rp-font-quote);
-  font-size: 15px;
+  font-size: 15.5px;
   line-height: 1.9;
   color: var(--rp-text-secondary);
 }
@@ -172,8 +178,12 @@
   padding: 8px 14px;
   border-bottom: 1px solid var(--rp-line-strong);
   border-top: none;
-  font: var(--dsw-font-markdown-table-head);
-  font-size: 13.5px;
+  font-family: var(--ds-font-family-code), ui-monospace, monospace;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--rp-text-secondary);
   max-width: 320px;
   max-width: min(30vw, 320px);
   min-width: 100px;
@@ -442,4 +452,32 @@
 
 .ds-markdown.rp-script a:not(.ds-a) {
   color: var(--rp-ember);
+}
+
+/* 观测记录正文：衬线，段落之间留白 */
+.ds-markdown.rp-script {
+  font-family: var(--rp-font-display);
+  font-weight: 400;
+}
+
+.ds-markdown.rp-script .ds-markdown-paragraph {
+  margin: 14px 0;
+}
+
+/*
+ * 舞台提示：以（或 ( 开头的段落由 AssistantMessage 在渲染后标上 .rp-stage，
+ * 用楷体、弱色、略小一号，读起来像剧本里的动作说明。
+ */
+.ds-markdown .rp-stage {
+  font-family: var(--rp-font-quote);
+  font-size: 0.98em;
+  line-height: 1.9;
+  letter-spacing: 0.01em;
+  color: var(--rp-text-muted);
+}
+
+.ds-markdown.rp-script a:not(.ds-a) {
+  color: var(--rp-ember);
+  text-decoration-color: var(--rp-ember-soft);
+  text-underline-offset: 3px;
 }

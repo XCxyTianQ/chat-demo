@@ -1,9 +1,15 @@
 declare const styles: {
-  readonly "message": string;
-  readonly "byline": string;
-  readonly "avatar": string;
-  readonly "name": string;
-  readonly "time": string;
+  readonly "record": string;
+  readonly "node": string;
+  readonly "meta": string;
+  readonly "received": string;
+  readonly "operator": string;
+  readonly "thinking": string;
+  readonly "thinkingIcon": string;
+  readonly "thinkingStopped": string;
+  readonly "thinkingText": string;
+  readonly "chevron": string;
+  readonly "shimmer": string;
   readonly "body": string;
   readonly "answer": string;
   readonly "streaming": string;

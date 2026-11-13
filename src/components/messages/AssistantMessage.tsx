@@ -1,8 +1,13 @@
 import { useTranslate } from '../../i18n/index.js'
 import clsx from 'clsx'
-import { memo } from 'react'
-import { IconRefreshOutline16, IconWarningOutline16 } from '../base/icons.js'
-import { characterAvatar } from '../../services/characters/avatar.js'
+import { memo, useEffect, useRef } from 'react'
+import {
+  IconChevronDownOutline14,
+  IconChevronRightOutline14,
+  IconRefreshOutline16,
+  IconThinkOutline16,
+  IconWarningOutline16,
+} from '../base/icons.js'
 import type { CharacterCard } from '../../services/characters/types.js'
 import { describeReply } from '../../services/chat/describe.js'
 import { canContinueReply } from '../../services/chat/reply.js'
@@ -10,14 +15,15 @@ import { continueReply, regenerateReply } from '../../services/chat/store.js'
 import { stopReadAloud } from '../../services/speech/readAloud.js'
 import type { AssistantMessage as AssistantMessageType } from '../../services/chat/types.js'
 import { openSettings } from '../settings/settingsDialogState.js'
-import { IconButton } from '../base/IconButton.js'
+import { sceneStrings } from '../session/strings.js'
 import { Button } from '../base/Button.js'
 import { Markdown } from '../markdown/Markdown.js'
 import { SiteThumbnails } from '../search/SiteLogo.js'
 import { toggleSearchPanel, useSearchPanel } from '../search/searchPanelState.js'
+import { ActionButton } from './ActionButton.js'
 import { ReadAloudButton } from './ReadAloudButton.js'
 import { CopyButton } from './CopyButton.js'
-import { ReplyArea } from './ReplyArea.js'
+import { ReplyArea, useThinkingArea } from './ReplyArea.js'
 import { useReplyView } from './useReplyView.js'
 import {
   BranchSwitcher,
@@ -30,10 +36,38 @@ const TOP_UP_URL = 'https://platform.deepseek.com/top_up'
 
 const pad2 = (value: number) => String(value).padStart(2, '0')
 
-/** 消息时间只显示时分；无效时间返回空串，由调用处不渲染 */
+/** 记录时间只显示时分；无效时间返回空串，由调用处不渲染 */
 const clockTime = (value: number) => {
   const date = new Date(value)
   return Number.isNaN(date.getTime()) ? '' : `${pad2(date.getHours())}:${pad2(date.getMinutes())}`
+}
+
+/**
+ * 舞台提示段落用楷体弱色：正文里以（或 ( 开头的段落在渲染后被标上 rp-stage。
+ * Markdown 的更新是异步节流的，所以用 MutationObserver 跟随每次重绘。
+ */
+const useStageDirectionMarks = (active: boolean) => {
+  const ref = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    const root = ref.current
+    if (!root) {
+      return
+    }
+    const apply = () => {
+      for (const paragraph of root.querySelectorAll('p')) {
+        paragraph.classList.toggle(
+          'rp-stage',
+          /^[(（]/.test((paragraph.textContent ?? '').trimStart())
+        )
+      }
+    }
+    apply()
+    const observer = new MutationObserver(apply)
+    observer.observe(root, { childList: true, subtree: true, characterData: true })
+    return () => observer.disconnect()
+    // 正文容器在第一条正文到达时才挂载，active 变化时重新接管
+  }, [active])
+  return ref
 }
 
 export const AssistantMessage = memo(function AssistantMessage({
@@ -48,7 +82,7 @@ export const AssistantMessage = memo(function AssistantMessage({
 }: {
   sessionId: string
   message: AssistantMessageType
-  /** 会话绑定的角色，用于书脊式的署名行；没有角色时只留正文 */
+  /** 会话绑定的角色，用于元信息行的观测者署名 */
   character?: CharacterCard
   isLast: boolean
   streaming: boolean
@@ -63,27 +97,44 @@ export const AssistantMessage = memo(function AssistantMessage({
   // 安全拒绝：已下发的思考与正文按协议丢弃，只显示模板答复。
   const refused = message.stopReason === 'refusal'
   const answer = refused ? null : view.answer
+  const answerRef = useStageDirectionMarks(!!answer)
   const responseText = [answer?.text, notice?.presentation === 'response' ? notice.text : null]
     .filter(Boolean)
     .join('\n\n')
   const copyText = responseText || notice?.text
+  const area = useThinkingArea(message, view, streaming, !!responseText)
   const waiting = streaming && view.steps.length === 0 && !view.answer && !message.thinking
   const summaryEntry = `${message.id}-summary`
   const time = clockTime(message.createdAt)
   return (
-    <div className={styles.message}>
-      {/* 没有绑定角色（普通助手会话）时不占署名行，正文直接起排 */}
-      {character ? (
-        <div className={styles.byline}>
-          <img className={styles.avatar} src={characterAvatar(character)} alt="" aria-hidden />
-          <span className={styles.name}>{character.name}</span>
-          {time ? (
-            <time className={styles.time} dateTime={new Date(message.createdAt).toISOString()}>
-              {time}
-            </time>
-          ) : null}
-        </div>
-      ) : null}
+    <article className={styles.record}>
+      <span className={styles.node} aria-hidden />
+      <div className={styles.meta}>
+        <span className={styles.received}>
+          {sceneStrings.received}
+          {time ? ` · ${time}` : null}
+        </span>
+        {character ? <span className={styles.operator}>{character.name}</span> : null}
+        {area.title ? (
+          <button
+            type="button"
+            className={styles.thinking}
+            aria-expanded={area.open}
+            aria-label={area.title}
+            onClick={area.toggle}
+          >
+            <span className={clsx(styles.thinkingIcon, area.stopped && styles.thinkingStopped)}>
+              <IconThinkOutline16 />
+            </span>
+            <span className={clsx(styles.thinkingText, area.titleActive && styles.shimmer)}>
+              {area.title}
+            </span>
+            <span className={styles.chevron}>
+              {area.open ? <IconChevronDownOutline14 /> : <IconChevronRightOutline14 />}
+            </span>
+          </button>
+        ) : null}
+      </div>
       <div className={styles.body}>
         {refused ? null : (
           <ReplyArea
@@ -91,10 +142,15 @@ export const AssistantMessage = memo(function AssistantMessage({
             view={view}
             streaming={streaming}
             hasResponse={!!responseText}
+            open={area.open}
+            collapsible={!!area.title}
           />
         )}
         {answer ? (
-          <div className={clsx(styles.answer, streaming && styles.streaming)}>
+          <div
+            ref={answerRef}
+            className={clsx(styles.answer, streaming && styles.streaming)}
+          >
             <Markdown
               className="ds-assistant-message-main-content rp-script"
               content={answer.markdown}
@@ -169,7 +225,6 @@ export const AssistantMessage = memo(function AssistantMessage({
         ) : null}
         {streaming ? null : (
           <div className={styles.bottom}>
-            <BranchSwitcher versions={versions} disabled={busy} onSelect={onSelectVersion} />
             <div
               className={clsx(
                 styles.actions,
@@ -180,10 +235,9 @@ export const AssistantMessage = memo(function AssistantMessage({
               {responseText && !refused ? (
                 <ReadAloudButton messageId={message.id} text={responseText} />
               ) : null}
-              <IconButton
+              <ActionButton
                 icon={<IconRefreshOutline16 />}
-                tooltip={t('regenerate')}
-                tooltipPlacement="bottom"
+                label={t('regenerate')}
                 disabled={busy || refused}
                 onClick={() => {
                   stopReadAloud()
@@ -191,6 +245,7 @@ export const AssistantMessage = memo(function AssistantMessage({
                 }}
               />
             </div>
+            <BranchSwitcher versions={versions} disabled={busy} onSelect={onSelectVersion} />
             {isLast && canContinueReply(message) ? (
               <Button
                 variant="outlined"
@@ -208,6 +263,6 @@ export const AssistantMessage = memo(function AssistantMessage({
           </div>
         )}
       </div>
-    </div>
+    </article>
   )
 })

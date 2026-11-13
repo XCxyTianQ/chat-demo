@@ -1,18 +1,15 @@
 import { useTranslate } from '../../i18n/index.js'
 import clsx from 'clsx'
-import { memo, useEffect, useState, type ReactNode } from 'react'
+import { memo, useCallback, useEffect, useState, type ReactNode } from 'react'
 import {
   IconBrowseOutline16,
   IconBrowseWarningOutline16,
-  IconChevronDownOutline14,
-  IconChevronRightOutline14,
   IconCheckedOutline14,
   IconCloseFill14,
   IconLinkOutline16,
   IconRightUpOutline14,
   IconSearchOutline16,
   IconSearchWarningOutline16,
-  IconThinkOutline16,
 } from '../base/icons.js'
 import type { AssistantMessage } from '../../services/chat/types.js'
 import {
@@ -53,54 +50,66 @@ const useTicker = (active: boolean, interval: number) => {
  * 开启深度思考时带可折叠的标题（正在思考 / 正在搜索 / 正在浏览网页 / 已思考（用时 N 秒））；
  * 未开启时只有工具步骤（如普通搜索的「已阅读 N 个网页」）。
  */
+/**
+ * 折叠入口的状态与标题：由记录的元信息行调用（等宽小字那一行），
+ * ReplyArea 只负责渲染展开后的过程步骤。
+ */
+export const useThinkingArea = (
+  message: AssistantMessage,
+  view: ReplyView,
+  streaming: boolean,
+  hasResponse: boolean
+) => {
+  // 角色扮演场景默认收起推理过程，避免打断阅读；点了入口才展开
+  const [open, setOpen] = useState(false)
+  const titleActive = streaming && !hasResponse
+  useTicker(titleActive, 1000)
+  // 未记录请求开关时，按是否有思考内容显示标题。
+  const thinking = message.thinking ?? view.steps.some((step) => step.type === 'thinking')
+  const title = thinking ? getAreaTitle(view, streaming, Date.now(), hasResponse) : null
+  const stopped = !streaming && !hasResponse
+  const toggle = useCallback(() => setOpen((value) => !value), [])
+  return { title, open, toggle, titleActive, stopped }
+}
+
 export const ReplyArea = memo(function ReplyArea({
   message,
   view,
   streaming,
   hasResponse,
+  open,
+  collapsible,
 }: {
   message: AssistantMessage
   view: ReplyView
   streaming: boolean
   hasResponse: boolean
+  /** 推理过程是否展开；折叠入口在记录的元信息行 */
+  open: boolean
+  /** 有折叠入口时才受 open 控制，没有入口时过程始终显示 */
+  collapsible: boolean
 }) {
   useTranslate()
-  // 角色扮演场景默认收起推理过程，避免打断阅读；点了标题才展开
-  const [open, setOpen] = useState(false)
-  const titleActive = streaming && !hasResponse
-  useTicker(titleActive, 1000)
   if (view.steps.length === 0 && !(message.thinking && streaming)) {
     return null
   }
-  // 未记录请求开关时，按是否有思考内容显示标题。
-  const thinking = message.thinking ?? view.steps.some((step) => step.type === 'thinking')
-  const title = thinking ? getAreaTitle(view, streaming, Date.now(), hasResponse) : null
-  const stopped = !streaming && !hasResponse
+  if (collapsible && !open) {
+    return null
+  }
   return (
     <div className={styles.area}>
-      {title ? (
-        <div className={styles.title} onClick={() => setOpen((value) => !value)}>
-          <span className={clsx(styles.titleIcon, stopped && styles.stoppedIcon)}>
-            <IconThinkOutline16 />
-          </span>
-          <span className={clsx(styles.titleText, titleActive && styles.shimmer)}>{title}</span>
-          {open ? <IconChevronDownOutline14 /> : <IconChevronRightOutline14 />}
-        </div>
-      ) : null}
-      {open || !title ? (
-        <div className={styles.steps}>
-          {view.steps.map((step, index) => (
-            <StepItem
-              key={stepKey(step, index)}
-              step={step}
-              message={message}
-              sources={view.sources}
-              streaming={streaming}
-              isLast={index === view.steps.length - 1}
-            />
-          ))}
-        </div>
-      ) : null}
+      <div className={styles.steps}>
+        {view.steps.map((step, index) => (
+          <StepItem
+            key={stepKey(step, index)}
+            step={step}
+            message={message}
+            sources={view.sources}
+            streaming={streaming}
+            isLast={index === view.steps.length - 1}
+          />
+        ))}
+      </div>
     </div>
   )
 })

@@ -1,4 +1,7 @@
-# 余烬与墨 · Ember & Ink
+# 余烬与墨 · Ember & Ink（v1，已被 Astra 取代）
+
+> 当前视觉是「群星 Astra」，见 [DESIGN-ASTRA.md](DESIGN-ASTRA.md)。本文件保留最初的纸墨方案，
+> 令牌名（`--rp-*`、`--char-*`）与部分排版规则仍被沿用。
 
 角色扮演对话平台（非工程用途）。引擎沿用 chat-demo：SSE 流式、消息分支、附件、Markdown。
 本层把「助手」换成「角色」：角色卡 + 用户人格 + 场景化排版。

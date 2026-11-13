@@ -4,23 +4,41 @@
   display: flex;
   align-items: center;
   flex-shrink: 0;
-  gap: 6px;
+  gap: 8px;
   box-sizing: border-box;
   height: calc(48px + env(safe-area-inset-top));
   padding: env(safe-area-inset-top) 8px 0;
-  background-color: var(--rp-bg);
+  background-color: var(--rp-surface);
   border-bottom: 1px solid var(--rp-line);
+  backdrop-filter: blur(18px);
+}
+
+.center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  min-width: 0;
+  gap: 1px;
+}
+
+.eyebrow {
+  font-family: var(--astra-mono);
+  font-size: 7px;
+  line-height: 9px;
+  letter-spacing: 0.22em;
+  color: var(--rp-text-muted);
+  white-space: nowrap;
 }
 
 .title {
-  flex: 1;
-  min-width: 0;
+  max-width: 100%;
   overflow: hidden;
   font-family: var(--rp-font-display);
-  font-size: 15px;
-  line-height: 22px;
-  letter-spacing: 0.04em;
-  text-align: center;
+  font-size: 14px;
+  line-height: 19px;
+  letter-spacing: 0.06em;
   color: var(--rp-text);
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -31,15 +49,16 @@
   align-items: center;
   flex-shrink: 0;
   gap: 6px;
-  height: 34px;
-  padding: 0 11px;
+  height: 32px;
+  padding: 0 10px;
   border: 1px solid var(--rp-line-strong);
   border-radius: 999px;
   background-color: transparent;
   color: var(--rp-text-secondary);
-  font-family: inherit;
+  font-family: var(--rp-font-display);
   font-size: 12px;
   line-height: 18px;
+  letter-spacing: 0.06em;
   cursor: pointer;
   transition:
     color var(--rp-dur) var(--rp-ease),

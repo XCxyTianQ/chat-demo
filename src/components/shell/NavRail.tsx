@@ -1,6 +1,7 @@
 import clsx from 'clsx'
 import { IconSettingsOutline16 } from '../base/icons.js'
 import { IconButton } from '../base/IconButton.js'
+import { Constellation } from '../stage/Astra.js'
 import { IconCardsOutline20, IconQuillOutline20 } from '../base/rpIcons.js'
 import { Tooltip } from '../base/Tooltip.js'
 import { personaAvatar } from '../../services/characters/avatar.js'
@@ -12,8 +13,8 @@ import { shellStrings } from './strings.js'
 import styles from './NavRail.module.css'
 
 /**
- * 桌面端 64px 竖栏：品牌记号、「角色库 / 对话」两个入口、底部人格与设置。
- * 入口高亮跟随当前状态：没有选中会话时在角色库（画廊），否则在对话。
+ * 桌面端 72px 竖栏：星座记号 + 竖排 ASTRA，两个竖排入口（星图 / 记录），底部观测者与设置。
+ * 高亮跟随当前状态：没有选中记录时在星图（画廊），否则在记录。
  */
 export const NavRail = () => {
   const activeId = useChatStore((state) => state.activeId)
@@ -34,7 +35,10 @@ export const NavRail = () => {
   return (
     <nav className={styles.rail} aria-label={shellStrings.navLabel}>
       <div className={styles.brand} aria-hidden="true">
-        <span>夜</span>
+        <span className={styles.mark}>
+          <Constellation name="Astra" accent={44} size={26} />
+        </span>
+        <span className={styles.brandName}>{shellStrings.brandName}</span>
       </div>
       <div className={styles.nav}>
         <Tooltip content={shellStrings.navCharacters} placement="bottom">
@@ -45,7 +49,10 @@ export const NavRail = () => {
             aria-current={atGallery ? 'page' : undefined}
             onClick={goCharacters}
           >
-            <IconCardsOutline20 />
+            <span className={styles.icon} aria-hidden="true">
+              <IconCardsOutline20 />
+            </span>
+            <span className={styles.vertical}>{shellStrings.navCharacters}</span>
           </button>
         </Tooltip>
         <Tooltip content={shellStrings.navChats} placement="bottom">
@@ -56,7 +63,10 @@ export const NavRail = () => {
             aria-current={!atGallery ? 'page' : undefined}
             onClick={goChats}
           >
-            <IconQuillOutline20 />
+            <span className={styles.icon} aria-hidden="true">
+              <IconQuillOutline20 />
+            </span>
+            <span className={styles.vertical}>{shellStrings.navChats}</span>
           </button>
         </Tooltip>
       </div>

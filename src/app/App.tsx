@@ -1,4 +1,3 @@
-import clsx from 'clsx'
 import { useEffect, type CSSProperties } from 'react'
 import { useTranslate } from '../i18n/index.js'
 import { useSettings } from '../services/settings.js'
@@ -26,9 +25,11 @@ import { stopReadAloud } from '../services/speech/readAloud.js'
 import { NavRail } from '../components/shell/NavRail.js'
 import { Sidebar } from '../components/shell/Sidebar.js'
 import { MobileDrawer } from '../components/shell/MobileDrawer.js'
+import { ScriptPanel } from '../components/shell/ScriptPanel.js'
 import { CharacterEditor } from '../components/characters/editor/CharacterEditor.js'
 import { PersonaDialog } from '../components/characters/editor/PersonaDialog.js'
 import { closeSider } from '../components/shell/uiState.js'
+import { StarField } from '../components/stage/Astra.js'
 import styles from './App.module.css'
 
 export const App = () => {
@@ -62,7 +63,7 @@ export const App = () => {
       ? state.characters.find((character) => character.id === session.characterId)
       : undefined
   )
-  // 打开某个角色的旧会话时，让外壳（强调色、侧栏高亮）跟上这个角色
+  // 打开某个角色的旧会话时，让外壳（星野色相、侧栏高亮）跟上这个角色
   const sessionCharacterId = session?.characterId ?? null
   useEffect(() => {
     if (sessionCharacterId) {
@@ -97,20 +98,22 @@ export const App = () => {
     ensureApiKey()
   }, [])
 
-  const sessionTitle = session
-    ? (sessionCharacter?.name ?? session.title ?? '')
-    : ''
+  const sessionTitle = session ? (sessionCharacter?.name ?? session.title ?? '') : ''
 
   return (
     <>
       <div
         ref={frameRef}
         className={styles.frame}
-        style={{ '--char-hue': String(hueCharacter?.accent ?? 32) } as CSSProperties}
+        style={{ '--char-hue': String(hueCharacter?.accent ?? 210) } as CSSProperties}
       >
+        {/* 整页星野：深色是深空，浅色主题下由 .frame 的月亮滤镜翻成蓝图白底 */}
+        <div className={styles.starLayer} aria-hidden="true">
+          <StarField character={hueCharacter} />
+        </div>
         {isMobile ? null : <NavRail />}
         {isMobile ? null : <Sidebar />}
-        <main className={clsx(styles.main, 'rp-grain')}>
+        <main className={styles.main}>
           {saveError ? (
             <div className={styles.saveError} role="alert">
               <span>{t('sessionSaveFailed')}</span>
@@ -129,6 +132,9 @@ export const App = () => {
             {!ready || (activeId !== null && !session) ? (
               <div className={styles.loadingView}>
                 <div className={styles.loadingState} role="status" aria-live="polite">
+                  <span className={styles.loadingMark} aria-hidden="true">
+                    ✦
+                  </span>
                   <span>
                     {(!ready ? initError : sessionLoadError)
                       ? t(!ready ? 'sessionListLoadFailed' : 'sessionLoadFailed')
@@ -158,6 +164,9 @@ export const App = () => {
             )}
           </div>
         </main>
+        {session && !isMobile ? (
+          <ScriptPanel session={session} character={sessionCharacter} />
+        ) : null}
         {isMobile ? <MobileDrawer /> : null}
       </div>
       <SettingsDialog />

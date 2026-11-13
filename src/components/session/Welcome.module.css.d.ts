@@ -2,12 +2,11 @@ declare const styles: {
   readonly "container": string;
   readonly "inner": string;
   readonly "head": string;
+  readonly "eyebrow": string;
   readonly "title": string;
-  readonly "subtitle": string;
   readonly "grid": string;
   readonly "newCard": string;
-  readonly "newIcon": string;
+  readonly "newPlus": string;
   readonly "newLabel": string;
-  readonly "newHint": string;
 };
 export = styles;

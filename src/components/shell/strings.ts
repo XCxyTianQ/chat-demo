@@ -1,30 +1,33 @@
-/** 「余烬与墨」应用外壳的全部界面文案：简体中文集中在此，方便统一修改。 */
+/** 「群星 · Astra」应用外壳的全部界面文案：简体中文集中在此，编号类英文是视觉装置。 */
 export const shellStrings = {
   appName: '夜话',
+  brandName: 'ASTRA',
+  appEyebrow: 'ASTRA · OBSERVATORY',
   navLabel: '主导航',
-  navCharacters: '角色库',
-  navChats: '对话',
-  navPersona: '人格',
+  navCharacters: '星图',
+  navChats: '记录',
+  navPersona: '观测者',
   navSettings: '设置',
-  charactersTitle: '角色',
-  charactersEmpty: '还没有角色，先写一个吧',
-  newCharacter: '新建角色',
+  charactersTitle: '星图',
+  charactersLabel: 'CONSTELLATIONS',
+  charactersEmpty: '星图上还没有星，先写一颗吧',
+  newCharacter: '新建星',
   editCharacterLabel: (name: string) => `编辑${name}`,
-  openCharacterLabel: (name: string) => `和${name}说说话`,
-  recentTitle: '最近对话',
-  recentEmpty: '还没有对话，选一个角色开始吧',
-  untitledChat: '未命名对话',
-  sessionMenu: '会话菜单',
+  openCharacterLabel: (name: string) => `观测${name}`,
+  recentTitle: '观测记录',
+  recentLabel: 'LOGS',
+  recentEmpty: '还没有观测记录，选一颗星开始',
+  untitledChat: '未命名记录',
+  sessionMenu: '记录菜单',
   renameSession: '重命名',
   deleteSession: '删除',
-  deleteFailed: '删除会话失败',
+  deleteFailed: '删除记录失败',
+  welcomeEyebrow: 'ASTRA OBSERVATORY · 选择一颗星',
   welcomeTitle: '今晚，想和谁说话？',
-  welcomeSubtitle: '选一个人，把今夜交给故事。',
-  newCharacterHint: '写下一个人',
-  openMenu: '打开角色与对话',
+  openLabel: 'OPEN',
+  openMenu: '打开星图与记录',
   newScene: '写新的一段',
-  drawerLabel: '角色与对话',
-  backToGallery: '回到角色画廊',
+  drawerLabel: '星图与观测记录',
 }
 
 const MINUTE = 60_000
@@ -33,7 +36,7 @@ const DAY = 24 * HOUR
 
 const startOfDay = (time: number) => new Date(time).setHours(0, 0, 0, 0)
 
-/** 会话列表里的相对时间：刚刚 / n 分钟前 / n 小时前 / 昨天 / n 天前 / M 月 D 日 */
+/** 观测记录里的相对时间：刚刚 / n 分钟前 / n 小时前 / 昨天 / n 天前 / M 月 D 日 */
 export const relativeTime = (time: number, now: number): string => {
   const diff = now - time
   if (diff < MINUTE) {

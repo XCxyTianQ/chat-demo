@@ -8,7 +8,7 @@
   height: var(--message-file-image-size, 120px);
   padding: 0;
   overflow: hidden;
-  border-radius: 14px;
+  border-radius: 10px;
   border: 1px solid var(--rp-line);
   background-color: var(--rp-paper-tint);
   font: inherit;
@@ -43,6 +43,7 @@ button.image {
 
 .retryImage {
   border-color: var(--dsw-alias-state-error-primary);
+  border-radius: 10px;
 }
 
 .overlay {

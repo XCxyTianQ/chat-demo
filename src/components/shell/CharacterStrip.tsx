@@ -7,20 +7,23 @@ import { closeSider, openCharacterEditor } from './uiState.js'
 import { shellStrings } from './strings.js'
 import styles from './CharacterStrip.module.css'
 
-/** 侧栏上半：角色列表，点击即以该角色开新会话 */
+/** 侧栏上半 · 星图：一颗星即一个角色，点星即以该角色开新记录 */
 export const CharacterStrip = () => {
   const ready = useCharacters((state) => state.ready)
   const characters = useCharacters((state) => state.characters)
   const activeCharacterId = useCharacters((state) => state.activeCharacterId)
 
   return (
-    <section className={styles.section} aria-labelledby="rp-characters-title">
+    <section className={styles.section} aria-labelledby="astra-characters-title">
       <div className={styles.header}>
-        <h2 id="rp-characters-title" className={styles.title}>
-          {shellStrings.charactersTitle}
-        </h2>
-        {characters.length > 0 ? <span className={styles.count}>{characters.length}</span> : null}
+        <div className={styles.heading}>
+          <h2 id="astra-characters-title" className={styles.title}>
+            {shellStrings.charactersTitle}
+          </h2>
+          <span className={styles.label}>{shellStrings.charactersLabel}</span>
+        </div>
         <span className={styles.spacer} />
+        {characters.length > 0 ? <span className={styles.count}>{characters.length}</span> : null}
         <IconButton
           icon={<IconPlusOutline16 />}
           tooltip={shellStrings.newCharacter}

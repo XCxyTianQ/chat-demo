@@ -1,4 +1,12 @@
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import {
+  Fragment,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import { useIsMobile } from '../../app/viewport.js'
 import {
   buildMessageVersions,
@@ -10,6 +18,7 @@ import type { Session } from '../../services/chat/types.js'
 import type { CharacterCard } from '../../services/characters/types.js'
 import { closeSearchPanel } from '../search/searchPanelState.js'
 import { AssistantMessage } from './AssistantMessage.js'
+import { RecordDivider } from './RecordDivider.js'
 import { ScrollToBottomContext } from './scrollContext.js'
 import { UserMessage } from './UserMessage.js'
 import type { Message } from '../../services/chat/types.js'
@@ -63,6 +72,18 @@ export const MessageList = ({
   if (versions !== previousVersions) {
     setPreviousVersions(versions)
   }
+  // 用户消息的序号：每 4 条前插一条幕次分隔
+  const userRecords = useMemo(() => {
+    const records = new Map<string, number>()
+    let count = 0
+    for (const message of messages) {
+      if (message.role === 'user') {
+        count += 1
+        records.set(message.id, count)
+      }
+    }
+    return records
+  }, [messages])
   const lastMessageId = messages.at(-1)?.id
   const scrollToBottom = useCallback(() => {
     const el = scrollRef.current
@@ -152,17 +173,24 @@ export const MessageList = ({
           <div ref={contentRef} className={styles.column}>
             {messages.map((message, index) =>
               message.role === 'user' ? (
-                <UserMessage
-                  key={message.id}
-                  sessionId={session.id}
-                  message={message}
-                  retryUploadId={uploadRetryId}
-                  isFirst={index === 0}
-                  isLast={index === lastIndex || index === lastIndex - 1}
-                  busy={streaming}
-                  versions={versions.get(message.id) ?? EMPTY_VERSIONS}
-                  onSelectVersion={selectVersion}
-                />
+                <Fragment key={message.id}>
+                  {(userRecords.get(message.id) ?? 1) % 4 === 1 ? (
+                    <RecordDivider
+                      index={userRecords.get(message.id) ?? 1}
+                      time={message.createdAt}
+                    />
+                  ) : null}
+                  <UserMessage
+                    sessionId={session.id}
+                    message={message}
+                    retryUploadId={uploadRetryId}
+                    isFirst={index === 0}
+                    isLast={index === lastIndex || index === lastIndex - 1}
+                    busy={streaming}
+                    versions={versions.get(message.id) ?? EMPTY_VERSIONS}
+                    onSelectVersion={selectVersion}
+                  />
+                </Fragment>
               ) : (
                 <AssistantMessage
                   key={message.id}

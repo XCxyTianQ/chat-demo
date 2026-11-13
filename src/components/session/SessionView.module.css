@@ -8,19 +8,84 @@
   --char-accent-soft: hsl(var(--char-hue) 45% 55% / 0.16);
   --char-glow: hsl(var(--char-hue) 70% 55% / 0.22);
 
+  position: relative;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  background: var(--rp-bg-deep);
+}
+
+/* 日光观测台：蓝图白底 + 极细经纬线，边缘渐隐 */
+.daylight {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-color: var(--rp-bg);
+  background-image:
+    radial-gradient(
+      70% 60% at 24% 6%,
+      color-mix(in srgb, var(--rp-star-dim) 10%, transparent),
+      transparent 72%
+    ),
+    linear-gradient(var(--rp-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--rp-line) 1px, transparent 1px);
+  background-size:
+    auto,
+    88px 88px,
+    88px 88px;
+  -webkit-mask-image: radial-gradient(130% 105% at 50% 34%, #000 42%, transparent 100%);
+  mask-image: radial-gradient(130% 105% at 50% 34%, #000 42%, transparent 100%);
+}
+
+/* 星盘刻度环：居中偏上，很淡，只提供仪器感 */
+.astrolabe {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  transform: translateY(-8%);
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+/* 阅读带：中间压暗一条，星野只在两侧与页头露出来 */
+.veil {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      90deg,
+      transparent 0%,
+      color-mix(in srgb, var(--rp-bg) 46%, transparent) 22%,
+      color-mix(in srgb, var(--rp-bg) 55%, transparent) 50%,
+      color-mix(in srgb, var(--rp-bg) 46%, transparent) 78%,
+      transparent 100%
+    ),
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--rp-bg) 18%, transparent) 0%,
+      transparent 26%,
+      color-mix(in srgb, var(--rp-bg) 40%, transparent) 100%
+    );
+}
+
+.stage {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   height: 100%;
   min-height: 0;
-  /* 不铺底色：让外壳的暗角与角色色光晕透上来 */
 }
 
-/* 侧栏收起时让开左侧的竖排入口 */
-.withCollapsedSider {
-  padding-left: 72px;
+.stageCollapsed {
+  padding-left: 56px;
 }
 
-.dock {
+/* 玻璃控制台：粘在底部，记录流从它下面滚过 */
+.console {
   position: sticky;
   bottom: 0;
   z-index: 10;
@@ -29,57 +94,56 @@
   flex-direction: column;
   align-items: center;
   width: 100%;
-  /* 内容不足一屏时把输入区压到底部；内容变长后自动归零，靠 sticky 继续吸底 */
   margin-top: auto;
-  padding-top: 26px;
-  /* 输入区浮起，上缘用半透明纸色渐隐，底色里的光晕还能透一点 */
-  background: linear-gradient(to bottom, transparent 0%, var(--rp-bg) 24%, var(--rp-bg) 100%);
+  padding: 16px 0 12px;
   background: linear-gradient(
     to bottom,
     transparent 0%,
-    color-mix(in srgb, var(--rp-bg) 84%, transparent) 26%,
-    color-mix(in srgb, var(--rp-bg) 94%, transparent) 100%
+    color-mix(in srgb, var(--rp-bg) 45%, transparent) 58%,
+    color-mix(in srgb, var(--rp-bg) 82%, transparent) 100%
   );
 }
 
-.dockInner {
+.consoleInner {
   box-sizing: border-box;
   width: 100%;
-  max-width: 760px;
+  max-width: 820px;
   padding: 0 32px;
 }
 
 .caveat {
   width: 100%;
-  padding: 8px 0 10px;
-  font-family: var(--rp-font-quote);
-  font-size: 12px;
+  padding: 10px 0 0;
+  font-family: var(--astra-mono, ui-monospace, monospace);
+  font-size: 9px;
   line-height: 1.6;
+  letter-spacing: 0.12em;
   text-align: center;
   color: var(--rp-text-muted);
   user-select: none;
 }
 
 @media not all and (min-width: 768px) {
-  .withCollapsedSider {
+  .astrolabe {
+    transform: translateY(-14%) scale(0.9);
+  }
+
+  .stageCollapsed {
     padding-left: 0;
   }
 
-  .dock {
+  .console {
     position: relative;
-    bottom: auto;
-    padding-top: 8px;
-    padding-bottom: env(safe-area-inset-bottom);
+    padding: 8px 0 calc(8px + env(safe-area-inset-bottom));
     background: none;
   }
 
-  .dockInner {
+  .consoleInner {
     max-width: none;
     padding: 0 12px;
   }
 
   .caveat {
-    padding: 6px 12px 8px;
-    font-size: 11px;
+    padding: 8px 12px 0;
   }
 }

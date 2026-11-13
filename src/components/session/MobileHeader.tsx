@@ -27,7 +27,10 @@ export const MobileHeader = ({ title }: { title?: string }) => {
         aria-label={shellStrings.openMenu}
         onClick={openSider}
       />
-      <div className={styles.title}>{title || shellStrings.appName}</div>
+      <div className={styles.center}>
+        <span className={styles.eyebrow}>{shellStrings.appEyebrow}</span>
+        <span className={styles.title}>{title || shellStrings.appName}</span>
+      </div>
       <button
         type="button"
         className={styles.newScene}
