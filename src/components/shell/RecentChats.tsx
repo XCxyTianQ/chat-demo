@@ -92,7 +92,9 @@ const SessionRow = memo(function SessionRow({
         }}
       >
         <span className={styles.dot} aria-hidden="true">
-          {character ? (
+          {character?.avatar ? (
+            <img className={styles.dotAvatar} src={character.avatar} alt="" draggable={false} />
+          ) : character ? (
             <Constellation name={character.name} accent={character.accent} size={24} />
           ) : (
             <span className={styles.dotEmpty}>✦</span>

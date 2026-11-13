@@ -40,7 +40,10 @@ export const SceneHeader = ({
               {sceneStrings.record} {record}
             </span>
           </div>
-          <div className={styles.nameWrap}>
+          <div className={character?.avatar ? `${styles.nameWrap} ${styles.withPortrait}` : styles.nameWrap}>
+            {character?.avatar ? (
+              <img className={styles.portrait} src={character.avatar} alt="" draggable={false} />
+            ) : null}
             <h1 className={styles.name}>{character?.name ?? title}</h1>
           </div>
           {character ? (

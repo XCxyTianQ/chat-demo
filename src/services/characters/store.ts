@@ -23,19 +23,36 @@ export const useCharacters = create<CharacterState>(() => ({
 
 let initTask: Promise<void> | undefined
 
+/** 内置角色版本：升级时清掉旧的内置角色（id 以 seed- 开头），换成新的这一版 */
+const SEED_VERSION = 2
+
 export const initCharacters = (): Promise<void> => {
   if (useCharacters.getState().ready) {
     return Promise.resolve()
   }
   initTask ??= (async () => {
     try {
-      const [stored, persona] = await Promise.all([db.loadCharacters(), db.loadPersona()])
-      if (stored.length === 0) {
+      const [stored, persona, seeded] = await Promise.all([
+        db.loadCharacters(),
+        db.loadPersona(),
+        db.loadMeta<number>('seedVersion'),
+      ])
+      const personaValue = persona ?? DEFAULT_PERSONA
+      if (stored.length === 0 || (seeded ?? 0) < SEED_VERSION) {
+        // 只清内置角色，用户自己建的角色保留
+        await Promise.all(
+          stored
+            .filter((character) => character.id.startsWith('seed-'))
+            .map((character) => db.deleteCharacter(character.id))
+        )
         await Promise.all(seedCharacters.map((character) => db.saveCharacter(character)))
+        await db.saveMeta('seedVersion', SEED_VERSION)
+        const kept = stored.filter((character) => !character.id.startsWith('seed-'))
+        const characters = [...seedCharacters, ...kept].sort((a, b) => a.createdAt - b.createdAt)
         useCharacters.setState({
           ready: true,
-          characters: seedCharacters,
-          persona: persona ?? DEFAULT_PERSONA,
+          characters,
+          persona: personaValue,
           activeCharacterId: seedCharacters[0]?.id ?? null,
         })
         return
@@ -43,7 +60,7 @@ export const initCharacters = (): Promise<void> => {
       useCharacters.setState({
         ready: true,
         characters: stored,
-        persona: persona ?? DEFAULT_PERSONA,
+        persona: personaValue,
         activeCharacterId: stored[0]?.id ?? null,
       })
     } catch (error) {

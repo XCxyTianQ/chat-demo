@@ -57,7 +57,11 @@ export const CharacterCard = ({
           onClick={onOpen}
         >
           <span className={styles.rowThumb} aria-hidden="true">
-            <Constellation name={character.name} accent={character.accent} size={40} />
+            {character.avatar ? (
+              <img className={styles.rowAvatar} src={character.avatar} alt="" draggable={false} />
+            ) : (
+              <Constellation name={character.name} accent={character.accent} size={40} />
+            )}
           </span>
           <span className={styles.rowText}>
             <span className={styles.rowName}>{character.name}</span>
@@ -79,9 +83,13 @@ export const CharacterCard = ({
         <div className={styles.skyField}>
           <StarField character={character} variant="card" />
         </div>
-        <div className={styles.constellation}>
-          <Constellation name={character.name} accent={character.accent} size={120} />
-        </div>
+        {character.avatar ? (
+          <img className={styles.portrait} src={character.avatar} alt="" draggable={false} />
+        ) : (
+          <div className={styles.constellation}>
+            <Constellation name={character.name} accent={character.accent} size={120} />
+          </div>
+        )}
         <span className={styles.cardCatalog}>{designation.catalog}</span>
         <span className={styles.cardOpen}>{shellStrings.openLabel}</span>
       </div>

@@ -130,6 +130,14 @@
   outline-offset: -2px;
 }
 
+.dotAvatar {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 18%;
+}
+
 .dot {
   display: flex;
   align-items: center;

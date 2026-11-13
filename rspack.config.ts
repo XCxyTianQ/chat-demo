@@ -77,6 +77,8 @@ export const createConfig = ({
         type: 'javascript/auto',
       },
       { test: /\.(woff2?|ttf)$/, type: 'asset/resource' },
+      // 角色立绘等图片资源：走 asset/resource，产物是带 hash 的静态文件
+      { test: /\.(png|jpe?g|webp|gif)$/i, type: 'asset/resource' },
     ],
   },
   plugins: [
