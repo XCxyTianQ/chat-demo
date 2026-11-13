@@ -7,6 +7,7 @@ import {
 } from '../../services/chat/branches.js'
 import { selectMessageVersion } from '../../services/chat/store.js'
 import type { Session } from '../../services/chat/types.js'
+import type { CharacterCard } from '../../services/characters/types.js'
 import { closeSearchPanel } from '../search/searchPanelState.js'
 import { AssistantMessage } from './AssistantMessage.js'
 import { ScrollToBottomContext } from './scrollContext.js'
@@ -36,10 +37,13 @@ const EMPTY_VERSIONS: MessageVersions = { ids: [], index: -1 }
 export const MessageList = ({
   session,
   streaming,
+  character,
   footer,
 }: {
   session: Session
   streaming: boolean
+  /** 会话绑定的角色；没有绑定时按普通助手对话排版 */
+  character?: CharacterCard
   footer: React.ReactNode
 }) => {
   const isMobile = useIsMobile()
@@ -164,6 +168,7 @@ export const MessageList = ({
                   key={message.id}
                   sessionId={session.id}
                   message={message}
+                  character={character}
                   isLast={index === lastIndex}
                   streaming={streaming && index === lastIndex}
                   busy={streaming}

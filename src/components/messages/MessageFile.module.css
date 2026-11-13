@@ -8,9 +8,9 @@
   height: var(--message-file-image-size, 120px);
   padding: 0;
   overflow: hidden;
-  border-radius: 16px;
-  border: 1px solid var(--dsw-alias-border-l2);
-  background-color: var(--dsw-alias-markdown-placeholder);
+  border-radius: 14px;
+  border: 1px solid var(--rp-line);
+  background-color: var(--rp-paper-tint);
   font: inherit;
   text-decoration: none;
 
@@ -38,7 +38,7 @@ button.image {
   justify-content: center;
   width: 36px;
   height: 36px;
-  color: var(--dsw-alias-label-secondary);
+  color: var(--rp-text-muted);
 }
 
 .retryImage {

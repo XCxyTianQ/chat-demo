@@ -1,6 +1,8 @@
 .ds-think-content .ds-markdown {
-  font: var(--dsw-font-markdown-small);
-  color: var(--dsw-alias-label-secondary);
+  font-family: var(--rp-font-quote);
+  font-size: 13px;
+  line-height: 1.85;
+  color: var(--rp-text-muted);
 
   h1,
   h2,
@@ -9,39 +11,42 @@
   h5,
   h6,
   .ds-markdown-paragraph {
-    margin: 12px 0;
+    margin: 10px 0;
   }
+
   h1,
   h2,
   h3,
   h4,
   h5,
   h6 {
-    font: var(--dsw-font-markdown-small-strong);
+    font-family: var(--rp-font-quote);
+    font-size: 13.5px;
+    font-weight: 600;
   }
 
   code {
-    font: var(--dsw-font-markdown-code-block);
+    font-family: var(--ds-font-family-code);
+    font-size: 12px;
   }
 
   hr {
-    margin: 28px 0;
+    margin: 20px 0;
+    background: var(--rp-line);
   }
 
   blockquote {
-    margin: 12px 0 0;
+    margin: 10px 0 0;
+    border-left-color: var(--rp-line-strong);
   }
 
   ul,
   ol {
-    margin: 12px 0;
+    margin: 10px 0;
   }
 
   th {
-    font: var(--dsw-font-markdown-small-strong);
-  }
-  td {
-    font: var(--dsw-font-markdown-small);
+    font-weight: 600;
   }
 
   h3 + ul,
@@ -54,6 +59,7 @@
   h6 + ol {
     margin-top: 4px;
   }
+
   h3:has(+ ul),
   h4:has(+ ul),
   h5:has(+ ul),
@@ -64,12 +70,14 @@
   h6:has(+ ol) {
     margin-bottom: 4px;
   }
+
   .ds-markdown-paragraph + ul,
   .ds-markdown-paragraph + ol {
     margin-top: 4px;
   }
+
   .ds-markdown-paragraph:has(+ ol),
-  .ds-markdown-paragraph:has(+ ol) {
+  .ds-markdown-paragraph:has(+ ul) {
     margin-bottom: 4px;
   }
 
@@ -77,18 +85,22 @@
   li > ol {
     margin-top: 2px;
   }
+
   li > .ds-markdown-paragraph {
     margin: 2px 0;
   }
+
   li:not(:first-child) {
     margin-top: 2px;
   }
+
   li > *:first-child {
     margin-top: 0;
   }
 
   .ds-markdown-cite {
     margin: 0 2px;
+
     + .ds-markdown-cite {
       margin-left: 0;
     }

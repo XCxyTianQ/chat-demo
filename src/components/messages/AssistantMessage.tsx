@@ -2,6 +2,8 @@ import { useTranslate } from '../../i18n/index.js'
 import clsx from 'clsx'
 import { memo } from 'react'
 import { IconRefreshOutline16, IconWarningOutline16 } from '../base/icons.js'
+import { characterAvatar } from '../../services/characters/avatar.js'
+import type { CharacterCard } from '../../services/characters/types.js'
 import { describeReply } from '../../services/chat/describe.js'
 import { canContinueReply } from '../../services/chat/reply.js'
 import { continueReply, regenerateReply } from '../../services/chat/store.js'
@@ -26,9 +28,18 @@ import styles from './AssistantMessage.module.css'
 
 const TOP_UP_URL = 'https://platform.deepseek.com/top_up'
 
+const pad2 = (value: number) => String(value).padStart(2, '0')
+
+/** 消息时间只显示时分；无效时间返回空串，由调用处不渲染 */
+const clockTime = (value: number) => {
+  const date = new Date(value)
+  return Number.isNaN(date.getTime()) ? '' : `${pad2(date.getHours())}:${pad2(date.getMinutes())}`
+}
+
 export const AssistantMessage = memo(function AssistantMessage({
   sessionId,
   message,
+  character,
   isLast,
   streaming,
   busy,
@@ -37,6 +48,8 @@ export const AssistantMessage = memo(function AssistantMessage({
 }: {
   sessionId: string
   message: AssistantMessageType
+  /** 会话绑定的角色，用于书脊式的署名行；没有角色时只留正文 */
+  character?: CharacterCard
   isLast: boolean
   streaming: boolean
   busy: boolean
@@ -56,123 +69,145 @@ export const AssistantMessage = memo(function AssistantMessage({
   const copyText = responseText || notice?.text
   const waiting = streaming && view.steps.length === 0 && !view.answer && !message.thinking
   const summaryEntry = `${message.id}-summary`
+  const time = clockTime(message.createdAt)
   return (
     <div className={styles.message}>
-      {refused ? null : (
-        <ReplyArea
-          message={message}
-          view={view}
-          streaming={streaming}
-          hasResponse={!!responseText}
-        />
-      )}
-      {answer ? (
-        <Markdown
-          className="ds-assistant-message-main-content"
-          content={answer.markdown}
-          loading={streaming}
-          cacheKey={message.id}
-          disableLink={false}
-          sources={view.sources}
-        />
-      ) : null}
-      {waiting ? (
-        <div className={styles.waiting}>
-          {[0, 1, 2].map((index) => (
-            <span key={index} className={styles.waitingDot} />
-          ))}
-        </div>
-      ) : null}
-      {notice?.presentation === 'response' ? (
-        <Markdown
-          className="ds-assistant-message-main-content"
-          content={notice.text}
-          loading={false}
-          cacheKey={`${message.id}-template`}
-          disableLink={false}
-        />
-      ) : notice ? (
-        <div className={styles.notice}>
-          <IconWarningOutline16 />
-          <span>
-            {notice.text}
-            {notice.action === 'apiKey' ? (
-              <>
-                {' '}
-                <button
-                  type="button"
-                  className={styles.noticeAction}
-                  onClick={() => openSettings('data')}
-                >
-                  {t('changeApiKey')}
-                </button>
-              </>
-            ) : null}
-            {notice.action === 'topUp' ? (
-              <>
-                {' '}
-                <a
-                  className={styles.noticeAction}
-                  href={TOP_UP_URL}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  {t('topUp')}
-                </a>
-              </>
-            ) : null}
-          </span>
-        </div>
-      ) : null}
-      {!streaming && !refused && view.searchResults.length > 0 ? (
-        <div
-          className={clsx(styles.summary, panelEntry === summaryEntry && styles.summaryActive)}
-          onClick={() => toggleSearchPanel(summaryEntry, view.searchResults)}
-        >
-          <SiteThumbnails sources={view.searchResults} />
-          <span>
-            {t(
-              view.searchResults.length === 1 ? 'messageSearchSummary' : 'messageSearchSummaries',
-              { count: view.searchResults.length }
-            )}
-          </span>
-        </div>
-      ) : null}
-      {streaming ? null : (
-        <div className={styles.bottom}>
-          <BranchSwitcher versions={versions} disabled={busy} onSelect={onSelectVersion} />
-          <div className={clsx(styles.actions, isLast && styles.alwaysShow)}>
-            {copyText ? <CopyButton text={copyText} /> : null}
-            {responseText && !refused ? (
-              <ReadAloudButton messageId={message.id} text={responseText} />
-            ) : null}
-            <IconButton
-              icon={<IconRefreshOutline16 />}
-              tooltip={t('regenerate')}
-              tooltipPlacement="bottom"
-              disabled={busy || refused}
-              onClick={() => {
-                stopReadAloud()
-                regenerateReply(sessionId, message.id)
-              }}
-            />
-          </div>
-          {isLast && canContinueReply(message) ? (
-            <Button
-              variant="outlined"
-              size="s"
-              className={styles.continueButton}
-              disabled={busy}
-              onClick={() => {
-                stopReadAloud()
-                continueReply(sessionId, message.id)
-              }}
-            >
-              {t('continueGenerating')}
-            </Button>
+      {/* 没有绑定角色（普通助手会话）时不占署名行，正文直接起排 */}
+      {character ? (
+        <div className={styles.byline}>
+          <img className={styles.avatar} src={characterAvatar(character)} alt="" aria-hidden />
+          <span className={styles.name}>{character.name}</span>
+          {time ? (
+            <time className={styles.time} dateTime={new Date(message.createdAt).toISOString()}>
+              {time}
+            </time>
           ) : null}
         </div>
-      )}
+      ) : null}
+      <div className={styles.body}>
+        {refused ? null : (
+          <ReplyArea
+            message={message}
+            view={view}
+            streaming={streaming}
+            hasResponse={!!responseText}
+          />
+        )}
+        {answer ? (
+          <div className={clsx(styles.answer, streaming && styles.streaming)}>
+            <Markdown
+              className="ds-assistant-message-main-content rp-script"
+              content={answer.markdown}
+              loading={streaming}
+              cacheKey={message.id}
+              disableLink={false}
+              sources={view.sources}
+            />
+          </div>
+        ) : null}
+        {waiting ? (
+          <div className={styles.waiting}>
+            {[0, 1, 2].map((index) => (
+              <span key={index} className={styles.waitingDot} />
+            ))}
+          </div>
+        ) : null}
+        {notice?.presentation === 'response' ? (
+          <Markdown
+            className="ds-assistant-message-main-content rp-script"
+            content={notice.text}
+            loading={false}
+            cacheKey={`${message.id}-template`}
+            disableLink={false}
+          />
+        ) : notice ? (
+          <div className={styles.notice}>
+            <IconWarningOutline16 />
+            <span>
+              {notice.text}
+              {notice.action === 'apiKey' ? (
+                <>
+                  {' '}
+                  <button
+                    type="button"
+                    className={styles.noticeAction}
+                    onClick={() => openSettings('data')}
+                  >
+                    {t('changeApiKey')}
+                  </button>
+                </>
+              ) : null}
+              {notice.action === 'topUp' ? (
+                <>
+                  {' '}
+                  <a
+                    className={styles.noticeAction}
+                    href={TOP_UP_URL}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    {t('topUp')}
+                  </a>
+                </>
+              ) : null}
+            </span>
+          </div>
+        ) : null}
+        {!streaming && !refused && view.searchResults.length > 0 ? (
+          <div
+            className={clsx(styles.summary, panelEntry === summaryEntry && styles.summaryActive)}
+            onClick={() => toggleSearchPanel(summaryEntry, view.searchResults)}
+          >
+            <SiteThumbnails sources={view.searchResults} />
+            <span>
+              {t(
+                view.searchResults.length === 1 ? 'messageSearchSummary' : 'messageSearchSummaries',
+                { count: view.searchResults.length }
+              )}
+            </span>
+          </div>
+        ) : null}
+        {streaming ? null : (
+          <div className={styles.bottom}>
+            <BranchSwitcher versions={versions} disabled={busy} onSelect={onSelectVersion} />
+            <div
+              className={clsx(
+                styles.actions,
+                (isLast || message.status === 'error') && styles.alwaysShow
+              )}
+            >
+              {copyText ? <CopyButton text={copyText} /> : null}
+              {responseText && !refused ? (
+                <ReadAloudButton messageId={message.id} text={responseText} />
+              ) : null}
+              <IconButton
+                icon={<IconRefreshOutline16 />}
+                tooltip={t('regenerate')}
+                tooltipPlacement="bottom"
+                disabled={busy || refused}
+                onClick={() => {
+                  stopReadAloud()
+                  regenerateReply(sessionId, message.id)
+                }}
+              />
+            </div>
+            {isLast && canContinueReply(message) ? (
+              <Button
+                variant="outlined"
+                size="s"
+                className={styles.continueButton}
+                disabled={busy}
+                onClick={() => {
+                  stopReadAloud()
+                  continueReply(sessionId, message.id)
+                }}
+              >
+                {t('continueGenerating')}
+              </Button>
+            ) : null}
+          </div>
+        )}
+      </div>
     </div>
   )
 })

@@ -2,8 +2,14 @@
   position: absolute;
   inset: 0;
   display: flex;
-  overflow: hidden;
-  background-color: var(--dsw-alias-bg-base);
+  overflow: clip;
+  background-color: var(--rp-bg);
+  /* 角色色：--char-hue 由角色 accent 驱动；:root 上的派生变量已解析成具体色值，
+     所以这里按色相重新声明一次，整棵子树读 var(--char-accent) 才真正随角色变化 */
+  --char-accent: hsl(var(--char-hue) 62% 66%);
+  --char-accent-strong: hsl(var(--char-hue) 68% 74%);
+  --char-accent-soft: hsl(var(--char-hue) 45% 55% / 0.16);
+  --char-glow: hsl(var(--char-hue) 70% 55% / 0.22);
 }
 
 .main {
@@ -12,24 +18,47 @@
   flex-direction: column;
   flex: 1;
   min-width: 0;
+  min-height: 0;
+  /* clip 而不是 hidden：hidden 仍可被 focus / scrollIntoView 程序化滚动，会把整页顶上去 */
+  overflow: clip;
+  background-color: var(--rp-bg);
+  background-image: var(--rp-vignette);
+}
+
+/* 缓慢流动的暖色光晕：只做 opacity / transform，很低的存在感 */
+.main::before {
+  content: '';
+  position: absolute;
+  inset: -25%;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    radial-gradient(42% 46% at 64% 16%, hsl(var(--char-hue) 72% 56% / 0.11), transparent 70%),
+    radial-gradient(40% 42% at 22% 84%, hsl(var(--char-hue) 62% 48% / 0.07), transparent 72%);
+  animation: rp-drift 34s ease-in-out infinite;
 }
 
 .content {
   position: relative;
+  z-index: 1;
   flex: 1;
   min-height: 0;
 }
 
 .saveError {
+  position: relative;
+  z-index: 2;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-wrap: wrap;
+  flex-shrink: 0;
   gap: 12px;
-  padding: 12px 16px;
-  color: var(--dsw-alias-label-primary);
-  background-color: var(--dsw-alias-bg-base);
-  font-size: 14px;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--rp-line);
+  background-color: var(--rp-surface);
+  color: var(--rp-text-secondary);
+  font-size: 13px;
 }
 
 .loadingView {
@@ -47,8 +76,10 @@
   justify-content: center;
   gap: 16px;
   padding: 24px;
-  color: var(--dsw-alias-label-secondary);
+  font-family: var(--rp-font-quote);
   font-size: 14px;
+  letter-spacing: 0.04em;
+  color: var(--rp-text-muted);
   text-align: center;
 }
 

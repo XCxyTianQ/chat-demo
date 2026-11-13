@@ -1,0 +1,108 @@
+/* 人格面板：居中弹窗。Modal 内置宽度 380px，这里用两个类提高一级特异性覆盖为 460px。 */
+.dialog.dialog {
+  width: 460px;
+  max-width: calc(100vw - 32px);
+  border-radius: var(--rp-radius-l);
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* 头像与名字的预览：光晕用余烬色，与角色色区分开 */
+.preview {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px;
+  border: 1px solid var(--rp-line);
+  border-radius: var(--rp-radius-m);
+  background:
+    radial-gradient(120% 90% at 0% 0%, var(--rp-ember-soft), transparent 64%),
+    var(--rp-paper-tint);
+}
+
+.avatar {
+  flex-shrink: 0;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 0 0 1px var(--rp-line-strong);
+}
+
+.previewText {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.previewName {
+  overflow: hidden;
+  font-family: var(--rp-font-display);
+  font-size: 20px;
+  line-height: 28px;
+  color: var(--rp-text);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.previewHint {
+  font-family: var(--rp-font-quote);
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--rp-text-muted);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.fieldLabel {
+  font-size: 13px;
+  line-height: 20px;
+  color: var(--rp-text-secondary);
+}
+
+.input,
+.textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 9px 12px;
+  border: 1px solid var(--rp-line);
+  border-radius: var(--rp-radius-s);
+  background-color: var(--rp-bg);
+  font: inherit;
+  font-size: 13.5px;
+  line-height: 1.7;
+  color: var(--rp-text);
+  outline: none;
+  transition: border-color var(--rp-dur) var(--rp-ease);
+
+  &::placeholder {
+    color: var(--rp-text-muted);
+  }
+
+  &:focus {
+    border-color: var(--rp-ember);
+  }
+}
+
+.textarea {
+  resize: vertical;
+}
+
+@media not all and (min-width: 768px) {
+  .dialog.dialog {
+    width: calc(100vw - 32px);
+  }
+
+  .preview {
+    padding: 12px;
+  }
+}

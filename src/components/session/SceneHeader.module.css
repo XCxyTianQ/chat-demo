@@ -1,0 +1,200 @@
+.header {
+  /* 头像方章的描边：由角色色推导，避免写死颜色 */
+  --char-line: var(--char-accent-soft);
+
+  position: relative;
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--rp-line);
+}
+
+/* 角色色的横向光带：很淡，只在场景头背后呼吸 */
+.glow {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  opacity: 0.12;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      90deg,
+      transparent 0%,
+      var(--char-accent) 38%,
+      transparent 92%
+    );
+}
+
+.row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  box-sizing: border-box;
+  /* 与消息列同宽；左侧再让出 18px，让印章与消息里的头像对齐 */
+  width: 100%;
+  max-width: 760px;
+  min-height: 76px;
+  margin: 0 auto;
+  padding: 14px 32px 14px 50px;
+}
+
+.avatar {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  border: 1px solid var(--char-line);
+  object-fit: cover;
+  background: var(--rp-paper-tint);
+}
+
+.identity {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.name {
+  margin: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-family: var(--rp-font-display);
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: 0.04em;
+  color: var(--rp-text);
+}
+
+.sub {
+  position: relative;
+  max-width: 520px;
+  outline: none;
+}
+
+.subText {
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--rp-text-secondary);
+  cursor: default;
+}
+
+/* 悬停/聚焦时把整句话浮出来，不撑动场景头高度 */
+.subFull {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: -10px;
+  z-index: 20;
+  box-sizing: border-box;
+  width: max-content;
+  max-width: min(560px, 60vw);
+  padding: 10px 14px;
+  border: 1px solid var(--rp-line);
+  border-radius: var(--rp-radius-s);
+  background: var(--rp-raised);
+  box-shadow: var(--rp-shadow-soft);
+  font-family: var(--rp-font-quote);
+  font-size: 13px;
+  line-height: 1.8;
+  color: var(--rp-text-secondary);
+  white-space: normal;
+  text-align: left;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-4px);
+  transition:
+    opacity var(--rp-dur) var(--rp-ease),
+    transform var(--rp-dur) var(--rp-ease),
+    visibility var(--rp-dur);
+}
+
+.sub:hover .subFull,
+.sub:focus-visible .subFull {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+}
+
+.sub:focus-visible .subText {
+  color: var(--rp-text-secondary);
+}
+
+.actions {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+}
+
+.ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 30px;
+  padding: 0 12px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--rp-text-secondary);
+  font: inherit;
+  font-size: 13px;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    color var(--rp-dur) var(--rp-ease),
+    background-color var(--rp-dur) var(--rp-ease),
+    border-color var(--rp-dur) var(--rp-ease);
+
+  svg {
+    flex-shrink: 0;
+    color: var(--char-accent);
+  }
+
+  &:hover {
+    border-color: var(--rp-line);
+    background: var(--rp-paper-tint);
+    color: var(--rp-text);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--char-accent-soft);
+    outline-offset: 2px;
+  }
+}
+
+.plainRow {
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 760px;
+  min-height: 64px;
+  margin: 0 auto;
+  padding: 14px 32px 14px 50px;
+}
+
+.plainTitle {
+  margin: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-family: var(--rp-font-display);
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: var(--rp-text);
+}
+
+/* 移动端：场景头由应用外壳的 48px 顶栏承担 */
+@media not all and (min-width: 768px) {
+  .header {
+    display: none;
+  }
+}

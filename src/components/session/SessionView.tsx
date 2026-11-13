@@ -1,13 +1,17 @@
 import clsx from 'clsx'
-import { useIsMobile } from '../../app/viewport.js'
-import { useTranslate } from '../../i18n/index.js'
+import { useCharacters } from '../../services/characters/store.js'
+import { accentStyle } from '../../services/characters/types.js'
 import type { Session } from '../../services/chat/types.js'
 import { ChatInput } from '../chatInput/ChatInput.js'
 import { MessageList } from '../messages/MessageList.js'
-import { MobileHeader } from './MobileHeader.js'
+import { SceneHeader } from './SceneHeader.js'
+import { sceneStrings } from './strings.js'
 import styles from './SessionView.module.css'
 
-/** 会话页：标题栏（移动端为顶栏）+ 消息列表，输入框吸底 */
+/**
+ * 会话页：场景头 + 剧本式消息流 + 浮起的输入区。
+ * 只负责编排，消息与输入的逻辑都在各自组件里。
+ */
 export const SessionView = ({
   session,
   streaming,
@@ -17,27 +21,28 @@ export const SessionView = ({
   streaming: boolean
   siderCollapsed: boolean
 }) => {
-  const t = useTranslate()
-  const isMobile = useIsMobile()
-  const title = session.title || t('untitledChat')
+  const characters = useCharacters((state) => state.characters)
+  const character = session.characterId
+    ? characters.find((item) => item.id === session.characterId)
+    : undefined
+  const title = session.title.trim() || sceneStrings.untitled
   return (
-    <div className={styles.view}>
-      {isMobile ? (
-        <MobileHeader title={title} />
-      ) : (
-        <div className={styles.header}>
-          <div className={clsx(styles.title, siderCollapsed && styles.withCollapsedSider)}>
-            {title}
-          </div>
-        </div>
-      )}
+    <div
+      className={clsx(styles.view, siderCollapsed && styles.withCollapsedSider)}
+      // 会话自己的角色决定整页的强调色，不依赖外壳当前选中的角色
+      style={character ? accentStyle(character.accent) : undefined}
+    >
+      <SceneHeader character={character} title={title} />
       <MessageList
         session={session}
         streaming={streaming}
+        character={character}
         footer={
-          <div className={styles.inputContainer}>
-            <ChatInput sessionId={session.id} />
-            <div className={styles.caveat}>{t('contentCaveat')}</div>
+          <div className={styles.dock}>
+            <div className={styles.dockInner}>
+              <ChatInput sessionId={session.id} />
+            </div>
+            <div className={styles.caveat}>{sceneStrings.caveat}</div>
           </div>
         }
       />

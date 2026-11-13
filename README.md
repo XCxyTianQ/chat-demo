@@ -1,5 +1,9 @@
 # chat-demo
 
+> **本仓库是改造分支**：把 chat-demo 做成中文角色扮演对话平台「夜话」——角色卡、人格、剧本式排版、
+> 「余烬与墨」主题。功能与运行方式见 [docs/rp/README.md](docs/rp/README.md)，
+> 设计与令牌见 [docs/rp/DESIGN.md](docs/rp/DESIGN.md)，鸿蒙构建见 [docs/harmonyos-build.md](docs/harmonyos-build.md)。
+
 English | [简体中文](README.zh-CN.md)
 
 A static chat demo powered by the DeepSeek API. No application backend is required: the browser connects directly to the configured API service.

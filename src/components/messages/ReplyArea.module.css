@@ -1,46 +1,55 @@
+/* 思考与工具步骤：折叠成一行小字，展开后是过程记录，不抢正文 */
 .area {
   margin-bottom: 10px;
 }
 
 .title {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  height: 34px;
-  margin-bottom: 2px;
-  color: var(--dsw-alias-label-secondary);
+  gap: 6px;
+  height: 26px;
+  color: var(--rp-text-muted);
   cursor: pointer;
   user-select: none;
-  transition: color 0.2s;
+  transition: color var(--rp-dur) var(--rp-ease);
 
   &:hover {
-    color: var(--dsw-alias-label-primary);
+    color: var(--rp-text-secondary);
   }
 }
 
 .titleIcon {
   display: flex;
-  margin-right: 6px;
-  color: var(--dsw-alias-brand-primary);
+  flex-shrink: 0;
+  color: var(--char-accent);
+
+  svg {
+    width: 13px;
+    height: 13px;
+  }
 }
 
 .stoppedIcon {
-  color: var(--dsw-alias-label-tertiary);
+  color: var(--rp-text-muted);
 }
 
 .titleText {
-  margin-right: 6px;
-  font: var(--dsw-font-markdown-base);
+  font-family: var(--rp-font-quote);
+  font-size: 12px;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums;
 }
 
 .shimmer {
   color: transparent;
   background: linear-gradient(
       90deg,
-      var(--dsw-alias-label-secondary) 0%,
-      var(--dsw-alias-label-secondary) 40%,
-      var(--dsw-alias-label-caption) 50%,
-      var(--dsw-alias-label-secondary) 60%,
-      var(--dsw-alias-label-secondary) 100%
+      var(--rp-text-muted) 0%,
+      var(--rp-text-muted) 40%,
+      var(--rp-text-secondary) 50%,
+      var(--rp-text-muted) 60%,
+      var(--rp-text-muted) 100%
     )
     0 0 / 300% 100%;
   background-clip: text;
@@ -51,6 +60,7 @@
   from {
     background-position: 100% 0;
   }
+
   to {
     background-position: 0 0;
   }
@@ -61,17 +71,17 @@
   &::after {
     content: '';
     position: absolute;
-    left: 7.5px;
-    top: 31px;
+    left: 6.5px;
+    top: 30px;
     width: 1px;
     height: calc(100% - 24px);
-    background-color: var(--dsw-alias-label-dimmed);
+    background: var(--rp-line);
   }
 }
 
 .content {
   position: relative;
-  padding: 5px 0 5px 22px;
+  padding: 5px 0 5px 20px;
 
   &.lastItem {
     padding-bottom: 0;
@@ -89,7 +99,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 16px;
+  width: 14px;
   height: 16px;
 }
 
@@ -97,12 +107,12 @@
   width: 5px;
   height: 5px;
   border-radius: 50%;
-  background: var(--dsw-alias-brand-primary);
+  background: var(--char-accent);
   animation: pulse 1.5s linear infinite;
 
   &.inactive {
     animation: none;
-    background-color: var(--dsw-alias-label-tertiary);
+    background: var(--rp-text-muted);
   }
 }
 
@@ -111,14 +121,17 @@
     transform: scale(1);
     animation-timing-function: ease-out;
   }
+
   40% {
     transform: scale(1.3);
     animation-timing-function: linear;
   }
+
   60% {
     transform: scale(1.3);
     animation-timing-function: ease-out;
   }
+
   100% {
     transform: scale(1);
   }
@@ -129,10 +142,11 @@
   flex-shrink: 0;
   margin-right: 6px;
   padding: 1px;
+  color: var(--rp-text-muted);
 
   svg {
-    width: 14px;
-    height: 14px;
+    width: 13px;
+    height: 13px;
   }
 }
 
@@ -141,9 +155,10 @@
   display: flex;
   align-items: center;
   max-width: 100%;
-  height: 34px;
-  color: var(--dsw-alias-label-secondary);
-  font: var(--dsw-font-markdown-small);
+  height: 30px;
+  color: var(--rp-text-muted);
+  font-size: 12px;
+  line-height: 1.6;
 
   &.clickable {
     width: fit-content;
@@ -155,18 +170,18 @@
     content: '';
     position: absolute;
     z-index: -1;
-    left: -10px;
-    width: calc(100% + 20px);
+    left: -8px;
+    width: calc(100% + 16px);
     height: calc(100% - 6px);
-    border-radius: 100px;
+    border-radius: 999px;
     opacity: 0;
     transition:
-      opacity 0.2s,
-      background-color 0.2s;
+      opacity var(--rp-dur) var(--rp-ease),
+      background-color var(--rp-dur) var(--rp-ease);
   }
 
   &.clickable::before {
-    background-color: var(--dsw-alias-interactive-bg-hover);
+    background: var(--rp-paper-tint);
   }
 
   &.clickable:hover::before {
@@ -174,20 +189,21 @@
   }
 
   &.active::before {
-    background-color: var(--dsw-alias-interactive-bg-active);
+    background: var(--char-accent-soft);
     opacity: 1;
   }
 
   &.clickable:hover,
   &.active {
-    --search-row-site-logo-color: var(--dsw-alias-interactive-bg-hover);
+    --search-row-site-logo-color: var(--rp-paper-tint);
+    color: var(--rp-text-secondary);
   }
 }
 
 .prefix,
 .summary {
   flex-shrink: 0;
-  font-variant: tabular-nums;
+  font-variant-numeric: tabular-nums;
 }
 
 .query {
@@ -209,12 +225,13 @@
   display: flex;
   max-width: 100%;
   padding: 5px 0;
-  color: var(--dsw-alias-label-secondary);
-  font: var(--dsw-font-markdown-small);
+  color: var(--rp-text-muted);
+  font-size: 12px;
+  line-height: 1.6;
 }
 
 .toolIcon {
-  margin-top: 4px;
+  margin-top: 3px;
 }
 
 .toolBody {
@@ -229,7 +246,7 @@
 .intro {
   display: inline-block;
   margin-right: 6px;
-  font-variant: tabular-nums;
+  font-variant-numeric: tabular-nums;
 }
 
 .page {
@@ -246,26 +263,27 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font: var(--dsw-font-xs-13);
+  font-size: 12px;
   text-decoration-line: underline;
   text-decoration-style: dotted;
-  text-decoration-color: var(--dsw-alias-label-caption);
+  text-decoration-color: var(--rp-line-strong);
   text-underline-offset: 4px;
-  transition: color 0.2s;
+  transition: color var(--rp-dur) var(--rp-ease);
 }
 
 .pageIcon {
   position: relative;
   bottom: 1px;
   display: flex;
+  opacity: 0.7;
 }
 
 .pageDone .pageText {
-  color: var(--dsw-alias-label-secondary);
+  color: var(--rp-text-muted);
 
   &:hover {
-    color: var(--dsw-alias-label-primary);
-    text-decoration-color: var(--dsw-alias-label-tertiary);
+    color: var(--rp-text);
+    text-decoration-color: var(--rp-text-muted);
   }
 }
 
@@ -273,7 +291,8 @@
   .pageText,
   .pageIcon {
     cursor: not-allowed;
-    color: var(--dsw-alias-label-caption);
+    color: var(--rp-text-muted);
+    opacity: 0.6;
   }
 }
 
@@ -287,15 +306,15 @@
   margin-right: 4px;
   padding: 0 5px;
   border-radius: 6px;
-  font: var(--dsw-font-xs-13);
+  font-size: 12px;
   line-height: 20px;
-  color: var(--dsw-alias-label-secondary);
-  background: var(--dsw-alias-markdown-tag);
+  color: var(--rp-text-secondary);
+  background: var(--rp-paper-tint);
   cursor: pointer;
 }
 
 .chipFailed {
-  color: var(--dsw-alias-label-caption);
+  color: var(--rp-text-muted);
   cursor: not-allowed;
 }
 

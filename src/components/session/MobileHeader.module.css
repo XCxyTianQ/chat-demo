@@ -1,19 +1,69 @@
 .header {
+  position: relative;
+  z-index: 2;
   display: flex;
   align-items: center;
   flex-shrink: 0;
+  gap: 6px;
   box-sizing: border-box;
-  height: 60px;
-  padding: 12px 10px 4px;
+  height: calc(48px + env(safe-area-inset-top));
+  padding: env(safe-area-inset-top) 8px 0;
+  background-color: var(--rp-bg);
+  border-bottom: 1px solid var(--rp-line);
 }
 
 .title {
   flex: 1;
   min-width: 0;
-  margin: 0 12px;
   overflow: hidden;
+  font-family: var(--rp-font-display);
+  font-size: 15px;
+  line-height: 22px;
+  letter-spacing: 0.04em;
+  text-align: center;
+  color: var(--rp-text);
   white-space: nowrap;
   text-overflow: ellipsis;
-  font: var(--dsw-font-s-strong-14);
-  color: var(--dsw-alias-label-primary);
+}
+
+.newScene {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  gap: 6px;
+  height: 34px;
+  padding: 0 11px;
+  border: 1px solid var(--rp-line-strong);
+  border-radius: 999px;
+  background-color: transparent;
+  color: var(--rp-text-secondary);
+  font-family: inherit;
+  font-size: 12px;
+  line-height: 18px;
+  cursor: pointer;
+  transition:
+    color var(--rp-dur) var(--rp-ease),
+    border-color var(--rp-dur) var(--rp-ease),
+    background-color var(--rp-dur) var(--rp-ease);
+}
+
+.newScene:hover {
+  color: var(--rp-ember);
+  border-color: var(--rp-ember);
+  background-color: var(--rp-paper-tint);
+}
+
+.newScene:focus-visible {
+  outline: 2px solid var(--rp-ember);
+  outline-offset: 2px;
+}
+
+@media (max-width: 399px) {
+  .newSceneLabel {
+    display: none;
+  }
+
+  .newScene {
+    padding: 0 8px;
+  }
 }

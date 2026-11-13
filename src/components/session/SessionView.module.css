@@ -1,70 +1,85 @@
 .view {
-  position: absolute;
-  inset: 0;
+  /*
+   * 角色色的派生令牌在主题里定义在 body / .frame 上，改 --char-hue 不会重算已继承的值。
+   * 会话自己的角色可能与外壳当前角色不同，因此在本层重新推导一次（公式同 rp-theme.css）。
+   */
+  --char-accent: hsl(var(--char-hue) 62% 66%);
+  --char-accent-strong: hsl(var(--char-hue) 68% 74%);
+  --char-accent-soft: hsl(var(--char-hue) 45% 55% / 0.16);
+  --char-glow: hsl(var(--char-hue) 70% 55% / 0.22);
+
   display: flex;
   flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  /* 不铺底色：让外壳的暗角与角色色光晕透上来 */
 }
 
-.header {
-  display: flex;
-  align-items: center;
-  flex-shrink: 0;
-  height: 60px;
-  padding: 12px 18px 0;
-  box-sizing: border-box;
-  background: var(--dsw-alias-bg-base);
-}
-
-.title {
-  max-width: 480px;
-  padding: 8px 12px;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  font: var(--dsw-font-s-strong-14);
-  color: var(--dsw-alias-label-primary);
-}
-
+/* 侧栏收起时让开左侧的竖排入口 */
 .withCollapsedSider {
-  margin-left: 113px;
+  padding-left: 72px;
 }
 
-.inputContainer {
+.dock {
   position: sticky;
   bottom: 0;
   z-index: 10;
   display: flex;
+  flex-shrink: 0;
   flex-direction: column;
   align-items: center;
-  box-sizing: border-box;
-  width: calc(var(--message-list-max-width) - 64px);
-  max-width: calc(100% - 32px);
-  margin: auto auto 0;
+  width: 100%;
+  /* 内容不足一屏时把输入区压到底部；内容变长后自动归零，靠 sticky 继续吸底 */
+  margin-top: auto;
+  padding-top: 26px;
+  /* 输入区浮起，上缘用半透明纸色渐隐，底色里的光晕还能透一点 */
+  background: linear-gradient(to bottom, transparent 0%, var(--rp-bg) 24%, var(--rp-bg) 100%);
   background: linear-gradient(
     to bottom,
     transparent 0%,
-    transparent 30%,
-    var(--dsw-alias-bg-base) 30%,
-    var(--dsw-alias-bg-base) 100%
+    color-mix(in srgb, var(--rp-bg) 84%, transparent) 26%,
+    color-mix(in srgb, var(--rp-bg) 94%, transparent) 100%
   );
+}
+
+.dockInner {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 760px;
+  padding: 0 32px;
 }
 
 .caveat {
   width: 100%;
-  padding: 6px 0;
-  font-size: 11px;
-  line-height: 16px;
+  padding: 8px 0 10px;
+  font-family: var(--rp-font-quote);
+  font-size: 12px;
+  line-height: 1.6;
   text-align: center;
-  color: var(--dsw-alias-label-tertiary);
+  color: var(--rp-text-muted);
   user-select: none;
 }
 
 @media not all and (min-width: 768px) {
-  .inputContainer {
+  .withCollapsedSider {
+    padding-left: 0;
+  }
+
+  .dock {
     position: relative;
     bottom: auto;
-    flex-shrink: 0;
-    margin: 0 auto;
+    padding-top: 8px;
     padding-bottom: env(safe-area-inset-bottom);
+    background: none;
+  }
+
+  .dockInner {
+    max-width: none;
+    padding: 0 12px;
+  }
+
+  .caveat {
+    padding: 6px 12px 8px;
+    font-size: 11px;
   }
 }

@@ -1,0 +1,89 @@
+/** 角色编辑器与人格面板的全部界面文案：集中在这里，保持简体中文与语气一致。 */
+export const STRINGS = {
+  // 抽屉外壳
+  newTitle: '新角色',
+  editTitle: '编辑角色',
+  close: '关闭',
+
+  // 预览区
+  avatarUpload: '上传头像',
+  avatarChange: '更换头像',
+  avatarRemove: '移除头像',
+  avatarTooLarge: '头像图片超过 1MB，请换一张小一些的',
+  avatarReadFailed: '头像读取失败，请重新选择',
+  nameLabel: '名字',
+  namePlaceholder: '角色名字',
+  taglineLabel: '一句话',
+  taglinePlaceholder: '一句话介绍这个角色',
+  tagsLabel: '标签',
+  tagsPlaceholder: '标签，用逗号分隔',
+  hueLabel: '色调',
+  hueAdjust: '微调色相',
+  hueSwatchLabel: (hue: number) => `色相 ${hue}°`,
+  hueValue: (hue: number) => `${hue}°`,
+
+  // 设定分组
+  settingsTitle: '设定',
+  descriptionLabel: '角色设定',
+  descriptionPlaceholder: '外貌、身份、来处、与你的关系……',
+  personalityLabel: '性格',
+  personalityPlaceholder: '冷静、话少，偶尔刻薄，护短。',
+  scenarioLabel: '场景',
+  scenarioPlaceholder: '初次见面时，你们正在……',
+  firstMessageLabel: '开场白',
+  firstMessageHint: '进入对话时由角色说出',
+  firstMessagePlaceholder: '“你来了。”',
+  exampleDialoguesLabel: '示例对话',
+  exampleDialoguesHint: '帮助角色抓住语气，按「用户：」「角色名：」分段',
+  exampleDialoguesPlaceholder: (name: string) => `用户：……\n${name.trim() || '角色名'}：……`,
+  systemPromptLabel: '补充指令',
+  systemPromptPlaceholder: '追加给模型的本角色专属指令',
+  optional: '选填',
+
+  // 底部操作条
+  importCard: '导入角色卡',
+  importPaste: '粘贴导入',
+  exportJson: '导出 JSON',
+  delete: '删除角色',
+  cancel: '取消',
+  save: '保存',
+  saving: '保存中…',
+  deleting: '删除中…',
+
+  // 粘贴导入
+  pasteTitle: '粘贴角色卡 JSON',
+  pastePlaceholder: '把 SillyTavern 角色卡的 JSON 粘贴到这里',
+  parse: '解析',
+
+  // 二次确认
+  discardConfirm: '有未保存的修改，确定要关闭吗？',
+  deleteTitle: '删除这个角色？',
+  deleteHint: '角色卡会从本机移除，已经开始的对话不会删除。',
+  confirmDelete: '确认删除',
+  back: '再想想',
+
+  // 提示与校验
+  nameRequired: '请先填写角色名',
+  exported: '已导出角色卡',
+  exportEmptyName: '请先填写角色名再导出',
+  saved: '角色已保存',
+  saveFailed: '保存失败，请稍后再试',
+  deleted: '角色已删除',
+  deleteFailed: '删除失败，请稍后再试',
+  importFailed: '导入失败',
+  importUnknownError: '无法识别这份角色卡',
+  importInvalidJson: '不是有效的 JSON 文件',
+  importEmpty: '请先粘贴角色卡 JSON',
+  importReady: '已载入角色卡，保存后生效',
+
+  // 人格面板
+  personaTitle: '人格',
+  personaNameLabel: '名字',
+  personaNamePlaceholder: '你在故事里的名字',
+  personaNameRequired: '请先填写名字',
+  personaDescriptionLabel: '设定',
+  personaDescriptionHint: '你在故事里的身份、外貌、与角色的关系',
+  personaHint: '人格会影响角色如何称呼你。',
+  personaSaved: '人格已保存',
+  personaSaveFailed: '人格保存失败，请稍后再试',
+}

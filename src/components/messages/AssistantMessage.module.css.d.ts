@@ -1,16 +1,23 @@
 declare const styles: {
   readonly "message": string;
-  readonly "actions": string;
+  readonly "byline": string;
+  readonly "avatar": string;
+  readonly "name": string;
+  readonly "time": string;
+  readonly "body": string;
+  readonly "answer": string;
+  readonly "streaming": string;
+  readonly "cursorBreathe": string;
   readonly "waiting": string;
   readonly "waitingDot": string;
-  readonly "fading": string;
+  readonly "waitingBreathe": string;
   readonly "notice": string;
   readonly "noticeAction": string;
   readonly "bottom": string;
+  readonly "actions": string;
   readonly "alwaysShow": string;
   readonly "continueButton": string;
   readonly "summary": string;
   readonly "summaryActive": string;
 };
 export = styles;
-

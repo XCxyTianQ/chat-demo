@@ -1,0 +1,23 @@
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  width: 296px;
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background-color: var(--rp-surface);
+  border-right: 1px solid var(--rp-line);
+}
+
+/* 抽屉里：占满剩余高度、跟随抽屉底色，滚动仍由自身负责 */
+.full {
+  flex: 1;
+  width: 100%;
+  height: auto;
+  min-height: 0;
+  border-right: none;
+  background-color: transparent;
+}

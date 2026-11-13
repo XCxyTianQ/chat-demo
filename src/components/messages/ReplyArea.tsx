@@ -65,7 +65,8 @@ export const ReplyArea = memo(function ReplyArea({
   hasResponse: boolean
 }) {
   useTranslate()
-  const [open, setOpen] = useState(true)
+  // 角色扮演场景默认收起推理过程，避免打断阅读；点了标题才展开
+  const [open, setOpen] = useState(false)
   const titleActive = streaming && !hasResponse
   useTicker(titleActive, 1000)
   if (view.steps.length === 0 && !(message.thinking && streaming)) {

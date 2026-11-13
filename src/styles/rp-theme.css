@@ -1,0 +1,154 @@
+/* 「余烬与墨」角色扮演主题令牌。由 Lead 维护，其他模块只消费不改写。 */
+:root {
+  --rp-font-display: 'Noto Serif CJK SC', 'Songti SC', 'STSong', 'SimSun', serif;
+  --rp-font-quote: 'KaiT-SC', 'FZKaiT-SC', 'Kaiti SC', 'Noto Serif CJK SC', serif;
+  --rp-font-body: var(--dsw-font-family);
+
+  --rp-radius-s: 8px;
+  --rp-radius-m: 14px;
+  --rp-radius-l: 20px;
+  --rp-radius-xl: 28px;
+
+  --rp-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --rp-dur: 200ms;
+  --rp-dur-slow: 320ms;
+
+  /* 角色色：由角色卡 accent（色相）驱动，组件只读这个变量 */
+  --char-hue: 32;
+  --char-accent: hsl(var(--char-hue) 62% 66%);
+  --char-accent-strong: hsl(var(--char-hue) 68% 74%);
+  --char-accent-soft: hsl(var(--char-hue) 45% 55% / 0.16);
+  --char-glow: hsl(var(--char-hue) 70% 55% / 0.22);
+}
+
+/* 深色：墨底 + 纸色字 + 余烬强调 */
+body {
+  --rp-bg: #131218;
+  --rp-bg-deep: #0d0c11;
+  --rp-surface: #1a1922;
+  --rp-raised: #232231;
+  --rp-overlay: rgba(10, 9, 14, 0.72);
+  --rp-text: #f1ebe0;
+  --rp-text-secondary: #b4ada1;
+  --rp-text-muted: #7b766d;
+  --rp-line: rgba(241, 235, 224, 0.08);
+  --rp-line-strong: rgba(241, 235, 224, 0.16);
+  --rp-ember: #e3a06a;
+  --rp-ember-strong: #f0b583;
+  --rp-ember-soft: rgba(227, 160, 106, 0.14);
+  --rp-paper-tint: rgba(241, 235, 224, 0.04);
+  --rp-user-bubble: rgba(241, 235, 224, 0.07);
+  --rp-user-bubble-border: rgba(241, 235, 224, 0.1);
+  --rp-shadow-float: 0 18px 48px rgba(0, 0, 0, 0.45);
+  --rp-shadow-soft: 0 2px 12px rgba(0, 0, 0, 0.25);
+  --rp-grain-opacity: 0.032;
+  --rp-vignette: radial-gradient(120% 90% at 50% 0%, rgba(255, 214, 170, 0.05), transparent 60%),
+    radial-gradient(90% 70% at 50% 110%, rgba(0, 0, 0, 0.5), transparent 70%);
+}
+
+body:not([data-ds-dark-theme]) {
+  --rp-bg: #f5f0e6;
+  --rp-bg-deep: #ece5d7;
+  --rp-surface: #fffcf5;
+  --rp-raised: #ffffff;
+  --rp-overlay: rgba(60, 50, 40, 0.28);
+  --rp-text: #241f1b;
+  --rp-text-secondary: #5c554c;
+  --rp-text-muted: #8a8378;
+  --rp-line: rgba(36, 31, 27, 0.1);
+  --rp-line-strong: rgba(36, 31, 27, 0.18);
+  --rp-ember: #a85a28;
+  --rp-ember-strong: #8c4a1f;
+  --rp-ember-soft: rgba(168, 90, 40, 0.1);
+  --rp-paper-tint: rgba(36, 31, 27, 0.03);
+  --rp-user-bubble: rgba(168, 90, 40, 0.08);
+  --rp-user-bubble-border: rgba(168, 90, 40, 0.16);
+  --rp-shadow-float: 0 18px 48px rgba(80, 62, 40, 0.14);
+  --rp-shadow-soft: 0 2px 12px rgba(80, 62, 40, 0.08);
+  --rp-grain-opacity: 0.022;
+  --rp-vignette: radial-gradient(120% 90% at 50% 0%, rgba(255, 236, 200, 0.6), transparent 60%);
+}
+
+/* 纸面颗粒：一层可复用的伪元素背景，任何容器加上就能有质感 */
+.rp-grain::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: var(--rp-grain-opacity);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+  mix-blend-mode: overlay;
+}
+
+@keyframes rp-rise {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes rp-drift {
+  0% { transform: translate3d(-2%, 0, 0) scale(1); }
+  50% { transform: translate3d(2%, -2%, 0) scale(1.06); }
+  100% { transform: translate3d(-2%, 0, 0) scale(1); }
+}
+
+@keyframes rp-breathe {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+/* 把上游 DS 令牌映射到「余烬与墨」，设置 / 弹窗 / 菜单 / Markdown 无需改动即跟随主题。
+   深色主题在上游是用 body[data-ds-dark-theme] 覆盖的，特异性更高，必须同步声明一次。 */
+body,
+body[data-ds-dark-theme] {
+  --dsw-alias-bg-base: var(--rp-bg);
+  --dsw-alias-bg-layer-2: var(--rp-surface);
+  --dsw-alias-bg-layer-3: var(--rp-raised);
+  --dsw-alias-bg-skeleton: var(--rp-paper-tint);
+  --dsw-alias-label-primary: var(--rp-text);
+  --dsw-alias-label-secondary: var(--rp-text-secondary);
+  --dsw-alias-label-tertiary: var(--rp-text-muted);
+  --dsw-alias-label-caption: var(--rp-text-muted);
+  --dsw-alias-label-dimmed: var(--rp-text-muted);
+  --dsw-alias-label-primary-foreground: #1a1512;
+  --dsw-alias-border-l1: var(--rp-line);
+  --dsw-alias-border-l2: var(--rp-line);
+  --dsw-alias-border-l3: var(--rp-line-strong);
+  --dsw-alias-border-l2-darkmode-thin: var(--rp-line);
+  --dsw-alias-brand-primary: var(--rp-ember);
+  --dsw-alias-brand-text: var(--rp-ember);
+  --dsw-alias-brand-primary-invert: var(--rp-ember);
+  --dsw-alias-button-primary-fill: var(--rp-ember);
+  --dsw-alias-button-primary-hover: var(--rp-ember-strong);
+  --dsw-alias-button-contrast-fill: var(--rp-ember);
+  --dsw-alias-button-elevated-fill: var(--rp-raised);
+  --dsw-alias-interactive-bg-hover: var(--rp-paper-tint);
+  --dsw-alias-interactive-bg-active: var(--rp-ember-soft);
+  --dsw-alias-interactive-bg-hover-accent: var(--rp-ember-soft);
+  --dsw-alias-markdown-code-block: var(--rp-paper-tint);
+  --dsw-alias-markdown-code-block-banner: var(--rp-paper-tint);
+  --dsw-alias-markdown-inline-code: var(--rp-paper-tint);
+  --dsw-alias-markdown-citation: var(--rp-paper-tint);
+  --dsw-alias-markdown-tag: var(--rp-paper-tint);
+  --dsw-alias-markdown-placeholder: var(--rp-paper-tint);
+  --dsw-specific-bubble: var(--rp-user-bubble);
+  --dsw-specific-input-major: var(--rp-surface);
+  --dsw-specific-menu: var(--rp-raised);
+  --dsw-specific-selector: var(--rp-raised);
+  --dsw-specific-sidebar-fill: var(--rp-surface);
+  --dsw-specific-sidebar-nav-item-hover: var(--rp-paper-tint);
+  --dsw-specific-sidebar-nav-item-active-accent: var(--rp-ember-soft);
+  --dsw-alias-tooltip-bg: var(--rp-raised);
+  --dsw-alias-toast-bg: var(--rp-raised);
+  --dsw-alias-state-error-primary: #e2705f;
+  --dsw-alias-state-error-secondary: #b8514a;
+  --dsw-shadow-lv3: var(--rp-shadow-float);
+  --scroll-color: var(--rp-line-strong);
+  --scroll-color-hover: var(--rp-text-muted);
+}

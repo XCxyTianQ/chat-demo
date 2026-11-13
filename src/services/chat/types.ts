@@ -85,6 +85,8 @@ export type AssistantMessage = MessageBranch & {
   latestReminder?: string
   /** 是否允许作为续写前缀；仍需满足回复状态与内容限制。 */
   prefix: boolean
+  /** 角色开场白：只用于展示与系统提示，不进入 messages（接口要求首条必须是 user）。 */
+  greeting?: boolean
   status: ReplyStatus
   /** 可识别的内容块按接收顺序排列；续写产生的块追加在已有块之后 */
   blocks: ReplyBlock[]
@@ -108,6 +110,8 @@ export type Message = UserMessage | AssistantMessage
 export type Session = {
   id: string
   title: string
+  /** 绑定的角色；未绑定时按普通助手对话处理（与上游行为一致）。 */
+  characterId?: string | null
   createdAt: number
   updatedAt: number
   /** 包含所有分支的消息，按创建顺序存储。 */
@@ -117,12 +121,15 @@ export type Session = {
 }
 
 /** 会话列表元数据；消息只在打开会话时加载。 */
-export type SessionSummary = Pick<Session, 'id' | 'title' | 'createdAt' | 'updatedAt'>
+export type SessionSummary = Pick<Session, 'id' | 'title' | 'createdAt' | 'updatedAt'> & {
+  characterId?: string | null
+}
 
 /** 显式提取字段，避免将完整会话的消息带进列表。 */
 export const toSessionSummary = (session: SessionSummary): SessionSummary => ({
   id: session.id,
   title: session.title,
+  characterId: session.characterId ?? null,
   createdAt: session.createdAt,
   updatedAt: session.updatedAt,
 })

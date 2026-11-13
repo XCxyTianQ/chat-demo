@@ -1,4 +1,5 @@
-import { useEffect } from 'react'
+import clsx from 'clsx'
+import { useEffect, type CSSProperties } from 'react'
 import { useTranslate } from '../i18n/index.js'
 import { useSettings } from '../services/settings.js'
 import { useIsMobile, useMobileViewport, usePreventPageScroll } from './viewport.js'
@@ -9,6 +10,7 @@ import {
   selectSession,
   useChatStore,
 } from '../services/chat/store.js'
+import { initCharacters, setActiveCharacter, useCharacters } from '../services/characters/store.js'
 import { SearchPanel } from '../components/search/SearchPanel.js'
 import { closeSearchPanel } from '../components/search/searchPanelState.js'
 import { SessionView } from '../components/session/SessionView.js'
@@ -21,21 +23,23 @@ import { showToast } from '../components/base/toastState.js'
 import { onUploadNotice } from '../services/attachments.js'
 import { Button } from '../components/base/Button.js'
 import { stopReadAloud } from '../services/speech/readAloud.js'
-import { CollapsedSider } from '../components/sider/CollapsedSider.js'
-import { closeMobileSider } from '../components/sider/mobileSiderState.js'
-import { MobileSider, Sider } from '../components/sider/Sider.js'
+import { NavRail } from '../components/shell/NavRail.js'
+import { Sidebar } from '../components/shell/Sidebar.js'
+import { MobileDrawer } from '../components/shell/MobileDrawer.js'
+import { CharacterEditor } from '../components/characters/editor/CharacterEditor.js'
+import { PersonaDialog } from '../components/characters/editor/PersonaDialog.js'
+import { closeSider } from '../components/shell/uiState.js'
 import styles from './App.module.css'
 
 export const App = () => {
   const t = useTranslate()
   const isMobile = useIsMobile()
   const locale = useSettings((state) => state.locale)
-  // 移动端侧边栏以独立抽屉管理开合状态
-  const siderCollapsed = useSettings((state) => state.siderCollapsed) && !isMobile
   const ready = useChatStore((state) => state.ready)
   const initError = useChatStore((state) => state.initError)
   const saveError = useChatStore((state) => Object.values(state.sessionSaveErrors).some(Boolean))
   const importingHistory = useChatStore((state) => state.importingHistory)
+  const activeId = useChatStore((state) => state.activeId)
   const session = useChatStore((state) =>
     state.activeId !== null && Object.hasOwn(state.sessionCache, state.activeId)
       ? state.sessionCache[state.activeId]
@@ -44,11 +48,30 @@ export const App = () => {
   const sessionLoadError = useChatStore((state) =>
     state.activeId === null ? false : state.sessionLoadErrors[state.activeId] === true
   )
-  const frameRef = useMobileViewport(isMobile)
   const streaming = useChatStore((state) =>
     state.activeId === null ? false : Object.hasOwn(state.streaming, state.activeId)
   )
-  const activeId = useChatStore((state) => state.activeId)
+  const activeCharacter = useCharacters((state) =>
+    state.activeCharacterId === null
+      ? undefined
+      : state.characters.find((character) => character.id === state.activeCharacterId)
+  )
+  // 移动端顶栏显示当前会话绑定的角色名；普通助手会话退回会话标题
+  const sessionCharacter = useCharacters((state) =>
+    session?.characterId
+      ? state.characters.find((character) => character.id === session.characterId)
+      : undefined
+  )
+  // 打开某个角色的旧会话时，让外壳（强调色、侧栏高亮）跟上这个角色
+  const sessionCharacterId = session?.characterId ?? null
+  useEffect(() => {
+    if (sessionCharacterId) {
+      setActiveCharacter(sessionCharacterId)
+    }
+  }, [sessionCharacterId])
+
+  const hueCharacter = sessionCharacter ?? activeCharacter
+  const frameRef = useMobileViewport(isMobile)
 
   usePreventPageScroll(isMobile)
 
@@ -65,19 +88,29 @@ export const App = () => {
   // 切换会话时停止朗读
   useEffect(stopReadAloud, [activeId])
   // 移动端选中会话、切换布局后收起抽屉
-  useEffect(closeMobileSider, [activeId, isMobile])
+  useEffect(closeSider, [activeId, isMobile])
 
   useEffect(() => {
     void initChat()
+    void initCharacters()
     // 首次打开先在设置里输入 API Key
     ensureApiKey()
   }, [])
 
+  const sessionTitle = session
+    ? (sessionCharacter?.name ?? session.title ?? '')
+    : ''
+
   return (
     <>
-      <div ref={frameRef} className={styles.frame}>
-        {isMobile ? <MobileSider /> : siderCollapsed ? null : <Sider />}
-        <main className={styles.main}>
+      <div
+        ref={frameRef}
+        className={styles.frame}
+        style={{ '--char-hue': String(hueCharacter?.accent ?? 32) } as CSSProperties}
+      >
+        {isMobile ? null : <NavRail />}
+        {isMobile ? null : <Sidebar />}
+        <main className={clsx(styles.main, 'rp-grain')}>
           {saveError ? (
             <div className={styles.saveError} role="alert">
               <span>{t('sessionSaveFailed')}</span>
@@ -91,11 +124,10 @@ export const App = () => {
               </Button>
             </div>
           ) : null}
+          {isMobile ? <MobileHeader title={sessionTitle} /> : null}
           <div className={styles.content}>
-            {siderCollapsed ? <CollapsedSider /> : null}
             {!ready || (activeId !== null && !session) ? (
               <div className={styles.loadingView}>
-                {isMobile ? <MobileHeader /> : null}
                 <div className={styles.loadingState} role="status" aria-live="polite">
                   <span>
                     {(!ready ? initError : sessionLoadError)
@@ -120,19 +152,18 @@ export const App = () => {
                 </div>
               </div>
             ) : session ? (
-              <SessionView
-                session={session}
-                streaming={streaming}
-                siderCollapsed={siderCollapsed}
-              />
+              <SessionView session={session} streaming={streaming} siderCollapsed={false} />
             ) : (
               <Welcome />
             )}
           </div>
         </main>
-        <SearchPanel />
+        {isMobile ? <MobileDrawer /> : null}
       </div>
       <SettingsDialog />
+      <CharacterEditor />
+      <PersonaDialog />
+      <SearchPanel />
       <Toast />
     </>
   )

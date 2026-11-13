@@ -1,34 +1,42 @@
 import { IconMenuOutline20, IconNewChatOutline20 } from '../base/icons.js'
-import { useTranslate } from '../../i18n/index.js'
-import { newChat } from '../../services/chat/store.js'
 import { IconButton } from '../base/IconButton.js'
-import { openMobileSider } from '../sider/mobileSiderState.js'
+import { useCharacters } from '../../services/characters/store.js'
+import { newChat, startCharacterChat } from '../../services/chat/store.js'
+import { closeSider, openSider } from '../shell/uiState.js'
+import { shellStrings } from '../shell/strings.js'
 import styles from './MobileHeader.module.css'
 
-/** 移动端顶栏：左侧菜单打开侧边栏；会话页再显示标题与开启新对话 */
+/** 移动端 48px 顶栏：左菜单开抽屉，中间当前角色名（没有则「夜话」），右侧写新的一段 */
 export const MobileHeader = ({ title }: { title?: string }) => {
-  const t = useTranslate()
+  const activeCharacterId = useCharacters((state) => state.activeCharacterId)
+
+  const startNew = () => {
+    if (activeCharacterId) {
+      startCharacterChat(activeCharacterId)
+    } else {
+      newChat()
+    }
+    closeSider()
+  }
+
   return (
-    <div className={styles.header}>
+    <header className={styles.header}>
       <IconButton
-        size="xl"
-        tone="primary"
+        size="m"
         icon={<IconMenuOutline20 />}
-        aria-label={t('expandSiderbarButton')}
-        onClick={openMobileSider}
+        aria-label={shellStrings.openMenu}
+        onClick={openSider}
       />
-      {title === undefined ? null : (
-        <>
-          <div className={styles.title}>{title}</div>
-          <IconButton
-            size="xl"
-            tone="primary"
-            icon={<IconNewChatOutline20 />}
-            aria-label={t('newChat')}
-            onClick={newChat}
-          />
-        </>
-      )}
-    </div>
+      <div className={styles.title}>{title || shellStrings.appName}</div>
+      <button
+        type="button"
+        className={styles.newScene}
+        aria-label={shellStrings.newScene}
+        onClick={startNew}
+      >
+        <IconNewChatOutline20 />
+        <span className={styles.newSceneLabel}>{shellStrings.newScene}</span>
+      </button>
+    </header>
   )
 }

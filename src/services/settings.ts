@@ -78,10 +78,10 @@ const initialLocation = (): UserLocation | null => {
   }
 }
 
-/** 未保存过时跟随系统 */
+/** 未保存过时默认深色（「余烬与墨」的主场景）；仍可在设置里切换浅色或跟随系统 */
 const initialThemePreference = (): ThemePreference => {
   const saved = read(KEYS.themePreference)
-  return saved === 'light' || saved === 'dark' ? saved : 'system'
+  return saved === 'light' || saved === 'dark' || saved === 'system' ? saved : 'dark'
 }
 
 /** 未保存过时使用服务端默认音色 stella（海星） */

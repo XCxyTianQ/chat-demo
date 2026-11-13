@@ -5,6 +5,8 @@ import type { ChatModel, CreateMessageRequest } from '../api/types.js'
 import { extractFileIds, getFileErrorCode, isRetryableApiError } from '../api/errors.js'
 import { cancelUpload, describeUploadError, uploadAttachment, useUploads } from '../attachments.js'
 import { useSettings } from '../settings.js'
+import { buildSystemPrompt } from '../characters/prompt.js'
+import { getCharacter, useCharacters } from '../characters/store.js'
 import { appendBranch, getVisibleMessages, normalizeSession, selectVersion } from './branches.js'
 import * as db from './db.js'
 import {
@@ -34,8 +36,47 @@ import {
 
 /** deepseek-flash 同时支持深度思考与图片输入 */
 const MODEL: ChatModel = 'deepseek-flash'
-/** 所有生成请求统一携带的助手身份说明 */
-const SYSTEM_PROMPT = '该助手为DeepSeek，由深度求索公司创造。'
+/** 绑定角色时的开场白消息：已完成状态，可被重新生成或切换分支。 */
+const createGreeting = (firstMessage: string): AssistantMessage => ({
+  id: createId(),
+  role: 'assistant',
+  createdAt: Date.now(),
+  model: null,
+  prefix: true,
+  greeting: true,
+  status: 'done',
+  blocks: [{ type: 'text', text: firstMessage }],
+})
+
+/** 开场白正文：接口不接受 assistant 作为首条消息，改由系统提示承接这段剧情。 */
+const greetingText = (session: Session | undefined): string => {
+  if (!session) {
+    return ''
+  }
+  const greeting = getVisibleMessages(session).find(
+    (message) => message.role === 'assistant' && message.greeting
+  )
+  if (greeting?.role !== 'assistant') {
+    return ''
+  }
+  return greeting.blocks
+    .flatMap((block) => (block.type === 'text' ? [block.text] : []))
+    .join('\n\n')
+    .trim()
+}
+
+const uniqueTitle = (base: string): string => {
+  const titles = new Set(get().sessions.map((session) => session.title))
+  if (!titles.has(base)) {
+    return base
+  }
+  for (let index = 2; ; index += 1) {
+    const candidate = `${base} · ${index}`
+    if (!titles.has(candidate)) {
+      return candidate
+    }
+  }
+}
 /** 保留最近打开的详情；当前会话、生成中及尚未成功保存的会话不淘汰。 */
 const SESSION_CACHE_LIMIT = 5
 /** 安全审核固定开启，所有请求都走扩展模式 */
@@ -447,6 +488,40 @@ export const newChat = () => {
   }
 }
 
+/**
+ * 与某个角色开始新对话：建立会话并把角色卡里的开场白放进去。
+ * 之后发送消息时，系统提示由角色卡与用户人格实时组装。
+ */
+export const startCharacterChat = (characterId: string) => {
+  if (get().importingHistory) {
+    return
+  }
+  const character = getCharacter(characterId)
+  if (!character) {
+    return
+  }
+  const now = Date.now()
+  const firstMessage = character.firstMessage?.trim()
+  const greeting = firstMessage ? createGreeting(firstMessage) : null
+  const session: Session = {
+    id: createId(),
+    title: uniqueTitle(character.name),
+    characterId: character.id,
+    createdAt: now,
+    updatedAt: now,
+    messages: greeting ? [greeting] : [],
+    rootMessageId: greeting ? greeting.id : null,
+  }
+  touchSession(session.id)
+  useCharacters.setState({ activeCharacterId: character.id })
+  set((state) => ({
+    sessions: [toSessionSummary(session), ...state.sessions],
+    sessionCache: { ...state.sessionCache, [session.id]: session },
+    activeId: session.id,
+  }))
+  persist(session.id)
+}
+
 export const selectSession = (id: string) => {
   if (!get().importingHistory && get().sessions.some((session) => session.id === id)) {
     touchSession(id)
@@ -563,13 +638,18 @@ export const sendMessage = (targetSessionId: string | null) => {
     return false
   }
   if (sessionId === null) {
+    const character = getCharacter(useCharacters.getState().activeCharacterId)
+    const greeting = character?.firstMessage?.trim()
+      ? createGreeting(character.firstMessage.trim())
+      : null
     const session: Session = {
       id: createId(),
-      title: '',
+      title: character ? uniqueTitle(character.name) : '',
+      characterId: character?.id ?? null,
       createdAt: now,
       updatedAt: now,
-      messages: [],
-      rootMessageId: null,
+      messages: greeting ? [greeting] : [],
+      rootMessageId: greeting ? greeting.id : null,
     }
     sessionId = session.id
     touchSession(session.id)
@@ -1000,7 +1080,11 @@ const streamReply = async (sessionId: string, initial: AssistantMessage, request
           useSettings.getState().apiKey ?? '',
           {
             model: initial.model ?? MODEL,
-            system: SYSTEM_PROMPT,
+            system: buildSystemPrompt(
+              getCharacter(getSession(sessionId)?.characterId),
+              useCharacters.getState().persona,
+              greetingText(getSession(sessionId))
+            ),
             messages,
             thinking: { type: initial.thinking ? 'enabled' : 'disabled' },
             safety_check: SAFETY_CHECK,

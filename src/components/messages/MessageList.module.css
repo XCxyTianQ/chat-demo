@@ -29,9 +29,17 @@
   }
 }
 
+/* 阅读列：760px 居中，左右各 32px 内边距（移动端 18px） */
 .column {
-  width: calc(var(--message-list-max-width) - 2 * var(--message-list-padding-horizontal));
-  max-width: calc(100% - 40px);
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 760px;
   margin: 0 auto;
-  padding-bottom: 24px;
+  padding: 28px 32px 8px;
+}
+
+@media not all and (min-width: 768px) {
+  .column {
+    padding: 18px 18px 4px;
+  }
 }

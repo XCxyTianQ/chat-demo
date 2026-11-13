@@ -1,0 +1,248 @@
+.row,
+.card {
+  /* :root 上的派生变量已经解析成具体色值，这里按角色色相重新声明一次，卡片内部才真正换色 */
+  --char-accent: hsl(var(--char-hue) 62% 66%);
+  --char-accent-soft: hsl(var(--char-hue) 45% 55% / 0.16);
+  --char-glow: hsl(var(--char-hue) 70% 55% / 0.22);
+}
+
+/* ---------- 侧栏紧凑行 ---------- */
+
+.row {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  border-left: 2px solid transparent;
+  transition:
+    background-color var(--rp-dur) var(--rp-ease),
+    border-color var(--rp-dur) var(--rp-ease);
+}
+
+.row:hover {
+  background-color: var(--rp-paper-tint);
+}
+
+.rowActive {
+  border-left-color: var(--rp-ember);
+  background: linear-gradient(90deg, var(--rp-ember-soft), transparent 82%);
+}
+
+.rowMain {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  gap: 11px;
+  min-width: 0;
+  padding: 9px 38px 9px 14px;
+  border: none;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.rowMain:focus-visible {
+  outline: 2px solid var(--rp-ember);
+  outline-offset: -2px;
+}
+
+.rowAvatar {
+  display: block;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  object-fit: cover;
+}
+
+.rowText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.rowName {
+  overflow: hidden;
+  font-family: var(--rp-font-display);
+  font-size: 15px;
+  line-height: 22px;
+  letter-spacing: 0.02em;
+  color: var(--rp-text);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.rowTagline {
+  overflow: hidden;
+  font-size: 12px;
+  line-height: 17px;
+  color: var(--rp-text-muted);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* ---------- 编辑按钮（两种形态共用） ---------- */
+
+.edit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: none;
+  border-radius: 8px;
+  background-color: transparent;
+  color: var(--rp-text-muted);
+  cursor: pointer;
+  opacity: 0;
+  transition:
+    opacity var(--rp-dur) var(--rp-ease),
+    color var(--rp-dur) var(--rp-ease),
+    background-color var(--rp-dur) var(--rp-ease);
+}
+
+.row:hover .edit,
+.row:focus-within .edit,
+.card:hover .edit,
+.card:focus-within .edit,
+.edit:focus-visible {
+  opacity: 1;
+}
+
+.edit:hover {
+  color: var(--rp-ember);
+  background-color: var(--rp-paper-tint);
+}
+
+.edit:focus-visible {
+  outline: 2px solid var(--rp-ember);
+  outline-offset: 1px;
+}
+
+@media (hover: none) {
+  .edit {
+    opacity: 0.65;
+  }
+}
+
+.row .edit {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  transform: translateY(-50%);
+}
+
+/* ---------- 画廊大卡片 ---------- */
+
+.card {
+  position: relative;
+  display: flex;
+  min-height: 214px;
+  overflow: hidden;
+  border: 1px solid var(--rp-line);
+  border-radius: var(--rp-radius-l);
+  background-color: var(--rp-surface);
+  background-image:
+    radial-gradient(130% 96% at 8% -10%, hsl(var(--char-hue) 62% 58% / 0.22), transparent 62%),
+    linear-gradient(158deg, hsl(var(--char-hue) 48% 52% / 0.1), transparent 58%);
+  transition:
+    transform 220ms var(--rp-ease),
+    border-color 220ms var(--rp-ease),
+    box-shadow 220ms var(--rp-ease);
+}
+
+@media (hover: hover) {
+  .card:hover {
+    transform: translateY(-3px);
+    border-color: var(--char-accent);
+    box-shadow: 0 16px 34px var(--char-glow);
+  }
+}
+
+.card:focus-within {
+  border-color: var(--char-accent);
+}
+
+.cardActive {
+  border-color: var(--rp-line-strong);
+}
+
+.cardMain {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  width: 100%;
+  padding: 22px 22px 20px;
+  border: none;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.cardMain:focus-visible {
+  outline: 2px solid var(--char-accent);
+  outline-offset: -4px;
+  border-radius: var(--rp-radius-l);
+}
+
+.cardAvatar {
+  display: block;
+  width: 96px;
+  height: 96px;
+  margin-bottom: 6px;
+  border-radius: 20px;
+  object-fit: cover;
+  box-shadow: 0 8px 20px hsl(var(--char-hue) 60% 20% / 0.35);
+}
+
+.cardName {
+  font-family: var(--rp-font-display);
+  font-size: 20px;
+  line-height: 28px;
+  letter-spacing: 0.03em;
+  color: var(--rp-text);
+}
+
+.cardTagline {
+  display: -webkit-box;
+  overflow: hidden;
+  font-size: 14px;
+  line-height: 21px;
+  color: var(--rp-text-secondary);
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.cardTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: auto;
+  padding-top: 12px;
+}
+
+.cardTag {
+  padding: 2px 9px;
+  border: 1px solid var(--rp-line-strong);
+  border-radius: 999px;
+  font-size: 11px;
+  line-height: 17px;
+  letter-spacing: 0.02em;
+  color: var(--rp-text-muted);
+}
+
+.card .edit {
+  position: absolute;
+  right: 14px;
+  bottom: 14px;
+  width: 28px;
+  height: 28px;
+  background-color: var(--rp-raised);
+  border: 1px solid var(--rp-line);
+}

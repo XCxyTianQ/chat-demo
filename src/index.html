@@ -3,8 +3,15 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <meta name="theme-color" content="#ffffff" />
-    <title>API 使用 demo</title>
+    <meta name="theme-color" content="#131218" />
+    <meta name="color-scheme" content="dark light" />
+    <meta name="description" content="夜话：一个和角色说话的地方。选一个人，把今夜交给故事。" />
+    <title>夜话</title>
+    <style>
+      /* 首帧底色，避免主题脚本执行前的白闪 */
+      html { background: #131218; }
+      @media (prefers-color-scheme: light) { html { background: #f5f0e6; } }
+    </style>
   </head>
   <body>
     <div id="root"></div>

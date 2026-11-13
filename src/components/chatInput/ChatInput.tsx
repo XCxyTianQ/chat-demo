@@ -1,11 +1,11 @@
 import clsx from 'clsx'
 import { memo, useCallback, useEffect, useLayoutEffect, useRef } from 'react'
 import {
-  IconGlobeLanguageOutline14,
   IconPaperclipOutline16,
+  IconSearchOutline16,
   IconSendOutline16,
   IconStopFill16,
-  IconThinkOutline14,
+  IconThinkOutline16,
 } from '../base/icons.js'
 import { setSearch, setThinking, useSettings } from '../../services/settings.js'
 import { useIsMobile } from '../../app/viewport.js'
@@ -21,7 +21,6 @@ import {
   useDrafts,
 } from '../../services/chat/drafts.js'
 import { stopReadAloud } from '../../services/speech/readAloud.js'
-import { IconButton } from '../base/IconButton.js'
 import { Tooltip } from '../base/Tooltip.js'
 import { ensureApiKey } from '../settings/settingsDialogState.js'
 import { DragMask, useFileDrop } from './DragMask.js'
@@ -167,7 +166,7 @@ const Input = ({ sessionId }: { sessionId: string | null }) => {
           ref={textareaRef}
           className={clsx(styles.textarea, recording && isMobile && styles.textareaHidden)}
           placeholder={t('chatInputPlaceholderChat')}
-          rows={2}
+          rows={1}
           // 移动端不自动聚焦，避免一打开就弹出键盘
           autoFocus={!isMobile}
           disabled={importingHistory}
@@ -200,8 +199,19 @@ const Input = ({ sessionId }: { sessionId: string | null }) => {
         </div>
       </div>
       <div className={styles.functionRow}>
-        {/* 深度思考 / 智能搜索开关，tooltip 在按钮上方 */}
+        {/* 左侧工具行：附件 / 深度思考 / 联网搜索；tooltip 在按钮上方 */}
         <div ref={togglesRef} className={styles.toggles}>
+          <Tooltip content={t('uploadFile')}>
+            <button
+              type="button"
+              className={clsx(styles.toggle, styles.iconToggle)}
+              aria-label={t('uploadFile')}
+              disabled={importingHistory}
+              onClick={() => ensureApiKey() && fileInputRef.current?.click()}
+            >
+              <IconPaperclipOutline16 />
+            </button>
+          </Tooltip>
           <Tooltip content={t('deactivatedThinkTooltip')}>
             <button
               type="button"
@@ -210,7 +220,7 @@ const Input = ({ sessionId }: { sessionId: string | null }) => {
               aria-pressed={thinking}
               onClick={() => setThinking(!thinking)}
             >
-              <IconThinkOutline14 />
+              <IconThinkOutline16 />
               <span className={styles.toggleLabel}>{t('thinkingSwitch')}</span>
             </button>
           </Tooltip>
@@ -222,7 +232,7 @@ const Input = ({ sessionId }: { sessionId: string | null }) => {
               aria-pressed={search}
               onClick={() => setSearch(!search)}
             >
-              <IconGlobeLanguageOutline14 />
+              <IconSearchOutline16 />
               <span className={styles.toggleLabel}>{t('search')}</span>
             </button>
           </Tooltip>
@@ -241,14 +251,6 @@ const Input = ({ sessionId }: { sessionId: string | null }) => {
               }
             }}
           />
-          <IconButton
-            size="m"
-            tone="primary"
-            icon={<IconPaperclipOutline16 />}
-            tooltip={t('uploadFile')}
-            disabled={importingHistory}
-            onClick={() => ensureApiKey() && fileInputRef.current?.click()}
-          />
           <input
             ref={fileInputRef}
             type="file"
@@ -263,7 +265,7 @@ const Input = ({ sessionId }: { sessionId: string | null }) => {
           {streaming && sessionId ? (
             <button
               type="button"
-              className={styles.sendButton}
+              className={clsx(styles.sendButton, styles.stopButton)}
               aria-label={t('chatInputStopButtonTooltip')}
               onClick={() => {
                 stopReadAloud()

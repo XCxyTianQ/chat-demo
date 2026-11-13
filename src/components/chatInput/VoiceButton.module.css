@@ -4,7 +4,7 @@
   flex-shrink: 0;
   font-size: 12px;
   line-height: 17px;
-  color: var(--dsw-alias-label-caption);
+  color: var(--rp-text-muted);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
@@ -91,7 +91,7 @@
 .glyph {
   position: relative;
   display: flex;
-  color: var(--dsw-static-neutral-bluish-00);
+  color: var(--rp-bg);
   animation: fadeIn 0.1s ease-out 0.26s both;
 }
 
